@@ -550,50 +550,23 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
   });
 }
 
-// Ziyaretçi Analizi ve Hata Ayıklama (Debug)
+// Ziyaretçi Analizi - Web Worker ile AdBlocker Bypass
 document.addEventListener("DOMContentLoaded", () => {
-    // Ekranda çalışan şeffaf bir hata ayıklayıcı (Debug UI) oluşturuyoruz
-    const debugUI = document.createElement("div");
-    debugUI.style.position = "fixed";
-    debugUI.style.bottom = "10px";
-    debugUI.style.left = "10px";
-    debugUI.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-    debugUI.style.color = "lime";
-    debugUI.style.padding = "10px";
-    debugUI.style.fontSize = "12px";
-    debugUI.style.zIndex = "999999";
-    debugUI.style.borderRadius = "8px";
-    debugUI.style.pointerEvents = "none";
-    debugUI.innerHTML = "<b>Sistem Başlatıldı...</b><br>";
-    document.body.appendChild(debugUI);
-
-    const logDebug = (msg) => {
-      debugUI.innerHTML += `> ${msg}<br>`;
-    };
-
-    logDebug("Değişkenler hazırlanıyor...");
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
     let batteryInfo = "Desteklenmiyor";
     
-    logDebug("IP Adresi aranıyor (ipinfo)...");
     const ipPromise = fetch("https://ipinfo.io/json")
       .then(res => res.json())
       .then(data => {
         locationData.ip = data.ip || "Bulunamadı";
         locationData.location = `${data.city || "Bilinmiyor"}, ${data.country || "Bilinmiyor"}`;
         locationData.isp = data.org || "Bilinmiyor";
-        logDebug("IP Başarılı (ipinfo).");
       })
       .catch(() => {
-        logDebug("ipinfo çöktü, ipify deneniyor...");
         return fetch("https://api.ipify.org?format=json")
           .then(res => res.json())
-          .then(data => {
-             locationData.ip = data.ip || "Bulunamadı";
-             logDebug("IP Başarılı (ipify).");
-          }).catch((e) => {
-             logDebug("İki IP servisi de engellendi!");
-          });
+          .then(data => { locationData.ip = data.ip || "Bulunamadı"; })
+          .catch(() => {});
       });
 
     const batteryPromise = navigator.getBattery ? navigator.getBattery().then(b => {
@@ -614,38 +587,81 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 100);
     });
 
-    logDebug("Veriler bekleniyor...");
     Promise.all([ipPromise, batteryPromise, adBlockerPromise]).then(() => {
-      logDebug("Veriler toplandı, payload hazırlanıyor...");
-      
-      const referrer = document.referrer || "Doğrudan Giriş";
+      const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
       const userAgent = navigator.userAgent;
       
       let deviceType = "Masaüstü (PC)";
       if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
       if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
 
+      let browserInfo = "Bilinmiyor";
+      if (userAgent.indexOf("Firefox") > -1) browserInfo = "Firefox";
+      else if (userAgent.indexOf("SamsungBrowser") > -1) browserInfo = "Samsung Browser";
+      else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browserInfo = "Opera";
+      else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) browserInfo = "Edge";
+      else if (userAgent.indexOf("Chrome") > -1) browserInfo = "Chrome";
+      else if (userAgent.indexOf("Safari") > -1) browserInfo = "Safari";
+
+      let osInfo = "Bilinmiyor";
+      if (userAgent.indexOf("Win") > -1) osInfo = "Windows";
+      else if (userAgent.indexOf("Mac") > -1) osInfo = "MacOS";
+      else if (userAgent.indexOf("Linux") > -1) osInfo = "Linux";
+      if (/android/i.test(userAgent)) osInfo = "Android";
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
+
+      let networkInfo = "Bilinmiyor";
+      if (navigator.connection) {
+        const conn = navigator.connection;
+        networkInfo = `${conn.effectiveType ? conn.effectiveType.toUpperCase() : "Bilinmiyor"} (${conn.downlink || 0} Mbps, ${conn.rtt || 0}ms)`;
+      }
+
+      const orientation = window.innerHeight > window.innerWidth ? "Dikey (Portrait) 📱" : "Yatay (Landscape) 🖥️";
       const screenRes = `${window.screen.width}x${window.screen.height}`;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
       const localTime = new Date().toLocaleTimeString();
-      
+      const cookieEnabled = navigator.cookieEnabled ? "Açık 🍪" : "Kapalı 🚫";
+      const windowSize = `${window.innerWidth}x${window.innerHeight}`;
+      const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
+
+      const safeString = (val) => {
+        const str = String(val);
+        return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
+      };
+
       const urlParams = new URLSearchParams(window.location.search);
       const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source');
 
-      const safeString = (val) => String(val) || "Bilinmiyor";
-
       const embedFields = [
-        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false },
+        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false }
+      ];
+      if (trackingCode) {
+        embedFields.push({ name: "🎯 Özel Takip Etiketi", value: safeString(trackingCode), inline: false });
+      }
+      embedFields.push(
         { name: "📍 Konum", value: safeString(locationData.location), inline: true },
         { name: "🌐 IP Adresi", value: safeString(locationData.ip), inline: true },
-        { name: "💻 İşletim Sistemi / Cihaz", value: safeString(deviceType), inline: true },
+        { name: "🏢 Servis Sağlayıcı", value: safeString(locationData.isp), inline: true },
+        { name: "🔋 Batarya Durumu", value: safeString(batteryInfo), inline: true },
+        { name: "🍪 Çerez (Cookie) İzni", value: safeString(cookieEnabled), inline: true },
+        { name: "🪟 Pencere Boyutu", value: safeString(windowSize), inline: true },
+        { name: "💎 Ekran Kalitesi (Ratio)", value: safeString(pixelRatio), inline: true },
         { name: "🛡️ AdBlocker", value: safeString(adBlocker), inline: true },
-      ];
-
-      if (trackingCode) embedFields.push({ name: "🎯 Takip Etiketi", value: safeString(trackingCode), inline: false });
+        { name: "📡 İnternet Bağlantısı", value: safeString(networkInfo), inline: true },
+        { name: "📐 Ekran Yönü", value: safeString(orientation), inline: true },
+        { name: "💻 İşletim Sistemi", value: safeString(osInfo), inline: true },
+        { name: "🌐 Tarayıcı", value: safeString(browserInfo), inline: true },
+        { name: "📱 Cihaz Tipi", value: safeString(deviceType), inline: true },
+        { name: "🖥️ Ekran Çözünürlüğü", value: safeString(screenRes), inline: true },
+        { name: "🌍 Dil & Saat Dilimi", value: safeString(`${navigator.language} / ${timeZone}`), inline: true },
+        { name: "⏰ Yerel Saat", value: safeString(localTime), inline: true },
+        { name: "🎨 Tema Tercihi", value: safeString(prefersDark), inline: true }
+      );
 
       const payload = {
         embeds: [{
-          title: "👀 Yeni Ziyaretçi Analizi (Debug Modu)",
+          title: "👀 Yeni Ziyaretçi Analizi (Özelleştirilmiş)",
           color: 3447003,
           fields: embedFields,
           footer: { text: "Bulut Gürgeli Analytics" },
@@ -653,29 +669,45 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      // DİKKAT: iOS AdBlocker'lar discord.com'u tamamen engellediği için "canary" alt alan adını kullanıyoruz.
-      // canary.discord.com, Discord'un geliştirici/test sunucusudur ve reklam engelleyicilerin kara listesinde DEĞİLDİR!
-      const webhookUrl = "https://canary.discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-      
-      logDebug("Canary Sunucusu üzerinden fırlatılıyor...");
+      const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
 
-      fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      })
-      .then(res => {
-        if (!res.ok) {
-           logDebug("Discord Canary Hatası: " + res.status);
-        } else {
-           logDebug("✅ İŞLEM TAMAM! (Log %100 Discord'a ulaştı)");
-        }
-      })
-      .catch(e => {
-        logDebug("Her şey engellendi (Canary çöktü): " + e.message);
-      });
+      // Web Worker: AdBlocker ana sayfadaki fetch'i engelliyor ama Worker kendi thread'inde çalışır, AdBlocker oraya erişemez!
+      const workerCode = `
+        self.onmessage = function(e) {
+          fetch(e.data.url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(e.data.payload)
+          })
+          .then(function(r) { self.postMessage({ ok: r.ok, status: r.status }); })
+          .catch(function(err) { self.postMessage({ ok: false, error: err.message }); });
+        };
+      `;
       
-    }).catch(e => {
-       logDebug("Promise.all çöktü: " + e.message);
+      try {
+        const blob = new Blob([workerCode], { type: "application/javascript" });
+        const workerUrl = URL.createObjectURL(blob);
+        const worker = new Worker(workerUrl);
+        
+        worker.onmessage = function(e) {
+          if (!e.data.ok) {
+            // Worker da engellenirse, son çare: navigator.sendBeacon
+            const beaconBlob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+            navigator.sendBeacon && navigator.sendBeacon(webhookUrl, beaconBlob);
+          }
+          worker.terminate();
+          URL.revokeObjectURL(workerUrl);
+        };
+        
+        worker.postMessage({ url: webhookUrl, payload: payload });
+      } catch (e) {
+        // Worker desteklenmiyorsa düz fetch dene
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      }
     });
 });
+
