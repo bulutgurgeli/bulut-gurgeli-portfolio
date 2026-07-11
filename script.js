@@ -681,19 +681,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      // CORS ve AdBlocker Bypass (Preflight'ı atlamak için FormData kullanıyoruz)
-      const formData = new FormData();
-      formData.append('payload_json', JSON.stringify(payload));
+      // CORS ve Mobil AdBlock engellerini %100 aşmak için Proxy üzerinden gönderim
+      const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
+      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(webhookUrl);
 
-      fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
+      fetch(proxyUrl, {
         method: "POST",
-        body: formData
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       }).then(res => {
         if (!res.ok) {
           res.text().then(t => alert("⚠️ DİKKAT: Discord API bu log mesajını reddetti! Sebep: " + t));
         }
       }).catch(e => {
-        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı (veya AdBlocker) Webhook'u engelliyor! Sebep: " + e.message);
+        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı Proxy'yi de engelledi! Sebep: " + e.message);
       });
     });
 });
