@@ -743,13 +743,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }]
           };
 
-          // Çıkış yaparken fetch bazen iptal olabilir, bu yüzden 'keepalive: true' kullanıyoruz (Backend-like sağlamlık)
-          fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(actionPayload),
-            keepalive: true 
-          }).catch(e => console.log("Action Analytics error"));
+          // Çıkış yaparken fetch iptal olmaması için en güvenilir yöntem olan sendBeacon (veya Blob) kullanımı
+          const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
+          const blob = new Blob([JSON.stringify(actionPayload)], { type: 'application/json' });
+          
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon(webhookUrl, blob);
+          } else {
+            fetch(webhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(actionPayload),
+              keepalive: true 
+            }).catch(() => {});
+          }
         }
       });
 
