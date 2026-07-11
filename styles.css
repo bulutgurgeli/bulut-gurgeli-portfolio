@@ -108,6 +108,32 @@ button {
   background: var(--ink);
 }
 
+.language-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(17, 17, 17, 0.08);
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 999px;
+}
+
+.language-switch button {
+  min-width: 42px;
+  height: 36px;
+  color: #403e38;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.language-switch button.is-active {
+  color: var(--paper);
+  background: var(--ink);
+}
+
 .nav-toggle {
   display: none;
   width: 44px;
@@ -641,7 +667,7 @@ p {
   .site-nav {
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
+    right: 58px;
     left: 0;
     display: none;
     flex-direction: column;
@@ -656,6 +682,10 @@ p {
 
   .site-nav.is-open {
     display: flex;
+  }
+
+  .language-switch {
+    margin-left: auto;
   }
 
   .hero,
