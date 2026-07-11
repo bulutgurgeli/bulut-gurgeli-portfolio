@@ -207,25 +207,28 @@ button {
   padding: clamp(26px, 5vw, 60px);
   overflow: hidden;
   color: var(--paper);
-  background:
-    linear-gradient(180deg, rgba(5, 5, 9, 0.5), rgba(5, 5, 9, 0.94)),
-    url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1800&q=88") center / cover;
-  background-attachment: fixed;
+  background: #050509;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
 
-.hero-main::before {
-  content: "SOUND";
+.hero-glow-bg {
   position: absolute;
-  right: -0.08em;
-  bottom: -0.2em;
-  color: rgba(201, 167, 255, 0.08);
-  font-size: clamp(8rem, 28vw, 28rem);
-  font-weight: 900;
-  letter-spacing: 0;
+  top: -20%;
+  right: -10%;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle at center, rgba(124, 60, 255, 0.15), rgba(117, 231, 255, 0.05) 40%, transparent 70%);
+  filter: blur(80px);
+  animation: aurora 15s ease-in-out infinite alternate;
   pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes aurora {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-5%, 10%) scale(1.1); }
 }
 
 .since-mark {
@@ -266,17 +269,30 @@ h1 {
   text-shadow: 0 4px 80px rgba(201, 167, 255, 0.15);
 }
 
+h1.hero-title {
+  margin: 0 0 16px;
+  font-size: clamp(3.4rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #ffffff 20%, #a282ff 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+}
+
 h2 {
-  margin-bottom: 18px;
-  font-size: clamp(2.2rem, 6vw, 5.6rem);
-  line-height: 0.9;
-  letter-spacing: 0;
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 h3 {
-  margin-bottom: 10px;
-  font-size: 1.24rem;
-  line-height: 1.12;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -333,17 +349,28 @@ p {
 
 /* ── Hero Stat Badges ── */
 .hero-stats {
-  position: relative; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px;
+  position: relative; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px;
   animation: fadeInUp 0.8s 0.9s ease both;
 }
 .stat-badge {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 999px; backdrop-filter: blur(12px);
-  font-size: 0.82rem; font-weight: 700; color: var(--muted);
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  background: rgba(16, 12, 32, 0.6);
+  border: 1px solid rgba(124, 60, 255, 0.2);
+  border-radius: 999px; backdrop-filter: blur(16px);
+  font-size: 0.85rem; font-weight: 600; color: rgba(247, 242, 255, 0.8);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
-.stat-badge strong { color: var(--paper); font-weight: 900; }
+.stat-badge:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124, 60, 255, 0.4);
+  background: rgba(32, 24, 58, 0.7);
+}
+.stat-badge svg {
+  color: #a282ff;
+}
+.stat-badge strong { color: #fff; font-weight: 800; }
 
 .button,
 .work-top a,
@@ -368,12 +395,24 @@ p {
 .link-strip button {
   color: var(--paper);
   background: linear-gradient(135deg, var(--violet), #4b22b5);
-  box-shadow: 0 12px 34px rgba(124, 60, 255, 0.28);
+  box-shadow: 0 12px 34px rgba(124, 60, 255, 0.3);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.button.dark:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(124, 60, 255, 0.5);
 }
 
 .button.light {
   color: var(--ink);
   background: linear-gradient(135deg, var(--acid), var(--cyan));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.button.light:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(117, 231, 255, 0.3);
 }
 
 .button.full {
@@ -467,7 +506,12 @@ p {
 /* ── Service Rail → Marquee ── */
 .service-rail {
   display: flex; overflow: hidden; width: 100%; margin: 0; padding: 0;
-  background: #f7f2ff; white-space: nowrap;
+  background: rgba(8, 7, 16, 0.95);
+  border-top: 1px solid rgba(124, 60, 255, 0.15);
+  border-bottom: 1px solid rgba(124, 60, 255, 0.15);
+  box-shadow: 0 0 40px rgba(124, 60, 255, 0.08);
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
 }
 .marquee-track {
   display: flex; flex-shrink: 0;
@@ -476,11 +520,13 @@ p {
 .marquee-track span {
   flex: 0 0 auto; min-height: 70px;
   padding: 24px clamp(22px, 4vw, 48px);
-  color: #080710; border-right: 1px solid rgba(8,7,16,0.16);
-  font-size: 0.82rem; font-weight: 900; letter-spacing: 0.12em;
+  color: #a282ff; 
+  border-right: 1px solid rgba(124, 60, 255, 0.15);
+  font-size: 0.85rem; font-weight: 900; letter-spacing: 0.15em;
   text-transform: uppercase; display: flex; align-items: center;
+  text-shadow: 0 0 16px rgba(124, 60, 255, 0.4);
 }
-.marquee-track .separator { font-size: 0.6rem; padding: 24px 12px; opacity: 0.3; border: 0; }
+.marquee-track .separator { font-size: 0.6rem; padding: 24px 12px; opacity: 0.5; border: 0; color: #fff; text-shadow: none; }
 @keyframes marqueeScroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
