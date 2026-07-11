@@ -7,7 +7,7 @@
       name="description"
       content="Bulut Gürgeli - ses mühendisi, ses teknisyeni ve boom operatörü portfolyosu."
     />
-    <title>Bulut Gürgeli | Ses Mühendisi</title>
+    <title>Bulut Gürgeli | Production Sound</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,13 +17,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="ambient" aria-hidden="true">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-    <header class="site-header glass">
+    <header class="site-header">
       <a class="brand" href="#top" aria-label="Bulut Gürgeli ana sayfa">
         <span class="brand-mark">BG</span>
         <span>Bulut Gürgeli</span>
@@ -35,7 +29,7 @@
       </button>
       <nav id="site-nav" class="site-nav" aria-label="Ana navigasyon">
         <a href="#projeler">Projeler</a>
-        <a href="#linkler">Linkler</a>
+        <a href="#video">Video</a>
         <a href="#cv">CV</a>
         <a href="#iletisim">İletişim</a>
       </nav>
@@ -43,53 +37,55 @@
 
     <main id="top">
       <section class="hero">
-        <div class="hero-copy glass">
-          <p class="eyebrow">Ses Mühendisi / Ses Teknisyeni / Boom Operatörü</p>
+        <div class="hero-copy">
+          <p class="eyebrow">Production sound / Post-production / Boom operation</p>
           <h1>Bulut Gürgeli</h1>
           <p class="lead">
-            Film, reklam, oyun ve podcast prodüksiyonlarında kayıt, miksaj, ses tasarımı,
-            diyalog temizliği ve post-prodüksiyon süreçlerinde çalışan İstanbul merkezli
-            ses profesyoneli.
+            Film, reklam, oyun ve podcast prodüksiyonlarında kayıt, miksaj, diyalog
+            temizliği, ses tasarımı ve frame-perfect senkron süreçlerinde çalışan
+            İstanbul merkezli ses mühendisi.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#projeler">Projeleri Gör</a>
-            <a class="button ghost" href="assets/bulut-gurgeli-cv.pdf" target="_blank" rel="noreferrer">
-              CV Aç
+            <a class="button primary" href="#projeler">Portfolyoyu İncele</a>
+            <a class="button secondary" href="assets/bulut-gurgeli-cv.pdf" target="_blank" rel="noreferrer">
+              PDF CV
             </a>
           </div>
         </div>
-        <div class="hero-visual glass" aria-label="Ses dalgası görseli">
-          <div class="waveform">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+
+        <aside class="hero-panel" aria-label="Bulut Gürgeli uzmanlık özeti">
+          <div class="hero-image">
+            <img
+              src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=84"
+              alt="Profesyonel ses mikseri ve canlı prodüksiyon ekipmanı"
+            />
           </div>
-          <div class="console">
-            <span>48 kHz</span>
-            <span>24 bit</span>
-            <span>frame sync</span>
+          <div class="signal-card">
+            <span>Set / Studio / Post</span>
+            <strong>Clean dialogue. Reliable sync. Controlled sound.</strong>
           </div>
-        </div>
+        </aside>
       </section>
 
-      <section class="section snapshot">
-        <article class="glass">
+      <section class="metrics" aria-label="Öne çıkan çalışma alanları">
+        <article>
+          <span>Lokasyon</span>
           <strong>İstanbul, Türkiye</strong>
-          <span>Saha, set ve stüdyo işleri</span>
         </article>
-        <article class="glass">
-          <strong>Film ve Reklam</strong>
-          <span>Set sesi, boom, diyalog kaydı</span>
+        <article>
+          <span>Odak</span>
+          <strong>Film, reklam, oyun, podcast</strong>
         </article>
-        <article class="glass">
-          <strong>Post Prodüksiyon</strong>
-          <span>Miksaj, temizlik, senkronizasyon</span>
+        <article>
+          <span>Roller</span>
+          <strong>Ses mühendisi, teknisyen, boom</strong>
         </article>
       </section>
 
-      <section id="ozet" class="section about glass">
-        <div>
-          <p class="eyebrow">Özet</p>
-          <h2>Teknik hassasiyetle kreatif ses üretimi.</h2>
+      <section class="section intro">
+        <div class="section-kicker">
+          <p class="eyebrow">Profil</p>
+          <h2>Sette hızlı, postta titiz, teslimde net.</h2>
         </div>
         <p>
           22 yaşında, ses mühendisliği alanında kendini geliştiren yaratıcı ve disiplinli
@@ -100,124 +96,130 @@
         </p>
       </section>
 
-      <section id="projeler" class="section">
+      <section id="projeler" class="section work-section">
         <div class="section-heading">
-          <p class="eyebrow">Portfolyo</p>
-          <h2>Seçili Projeler</h2>
+          <p class="eyebrow">Seçili işler</p>
+          <h2>Prodüksiyon kredileri</h2>
         </div>
-        <div class="project-grid">
-          <article class="project-card glass">
-            <span class="tag">Freelance / Proje Bazlı</span>
-            <h3>PUBG Mobile Türkiye</h3>
-            <p class="role">Ses Teknisyeni</p>
+
+        <div class="work-list">
+          <article class="work-item featured">
+            <div>
+              <span class="project-type">Game / Brand Content</span>
+              <h3>PUBG Mobile Türkiye</h3>
+              <p class="role">Ses Teknisyeni - Freelance / Proje Bazlı</p>
+            </div>
             <p>
-              Saha ve stüdyo ortamlarında kayıt ekipmanı kurulumu, diyalog, oyun içi efekt
-              ve atmosfer kayıtları; diyalog temizliği, miksaj ve frame-perfect senkron.
+              Saha ve stüdyo ortamlarında profesyonel ses kayıt ekipmanlarının kurulumu,
+              diyalog, oyun içi efekt ve atmosfer kayıtları; diyalog temizliği, miksaj ve
+              görüntü-ses senkronizasyonu.
             </p>
             <a href="https://docs.google.com/document/d/1kVroE2wuCbxUsmCOOGvt4xYg0FcDeMLS1tJkLMrzoxo/edit?usp=sharing" target="_blank" rel="noreferrer">
-              docs.google.com/document/d/1kVroE2...
+              Google Docs kaydını aç
             </a>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">Freelance / Proje Bazlı</span>
-            <h3>Vodafone Freezone</h3>
-            <p class="role">Ses Teknisyeni</p>
+          <article class="work-item featured">
+            <div>
+              <span class="project-type">Brand Film</span>
+              <h3>Vodafone Freezone</h3>
+              <p class="role">Ses Teknisyeni - Freelance / Proje Bazlı</p>
+            </div>
             <p>
-              Shotgun, lavalier ve field recorder ile saha/stüdyo kayıtları; marka içeriğine
-              uygun diyalog, atmosfer, efekt, jingle senkronu ve dinamik miksaj.
+              Shotgun mikrofon, lavalier ve field recorder ile reklam içeriğine uygun
+              diyalog, atmosfer ve efekt kayıtları; jingle senkronu, noise reduction ve
+              dinamik miksaj süreci.
             </p>
             <a href="https://docs.google.com/document/d/1VwunSa94R1lbDoSKOM_y44-bE80i87WC5uVNNvz9NsQ/edit?usp=sharing" target="_blank" rel="noreferrer">
-              docs.google.com/document/d/1Vwun...
+              Google Docs kaydını aç
             </a>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">Short Film</span>
-            <h3>Defne</h3>
-            <p class="role">Boom Operatörü</p>
-            <p>
-              Film setinde shotgun mikrofon, boom pole ve lavalier ekipmanlarıyla diyalog ve
-              atmosfer kayıtları; temiz ve tutarlı set sesi çıktıları.
-            </p>
-            <a href="https://www.imdb.com/title/tt35726546/" target="_blank" rel="noreferrer">
-              imdb.com/title/tt35726546
-            </a>
+          <article class="work-item">
+            <div>
+              <span class="project-type">Short Film</span>
+              <h3>Defne</h3>
+              <p class="role">Boom Operatörü</p>
+            </div>
+            <p>Shotgun, boom pole ve lavalier ekipmanlarıyla diyalog ve atmosfer kayıtları.</p>
+            <a href="https://www.imdb.com/title/tt35726546/" target="_blank" rel="noreferrer">IMDb sayfası</a>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">YouTube / Podcast</span>
-            <h3>Mantra Podcast</h3>
-            <p class="role">Ses Teknisyeni</p>
-            <p>
-              Podcast kayıtlarında mikrofon pozisyonlama, gain staging, konuk ve sunucu
-              diyaloglarının net ve dengeli kaydı.
-            </p>
-            <button class="link-button" type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHda1czR6iuQpJICEDJZNJSd">
-              Playlist'i Aç
+          <article class="work-item">
+            <div>
+              <span class="project-type">Podcast</span>
+              <h3>Mantra Podcast</h3>
+              <p class="role">Ses Teknisyeni</p>
+            </div>
+            <p>Mikrofon pozisyonlama, gain staging, konuk ve sunucu diyaloglarının dengeli kaydı.</p>
+            <button type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHda1czR6iuQpJICEDJZNJSd">
+              Playlist'i aç
             </button>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">YouTube / Podcast</span>
-            <h3>Pınar Sabancı Podcast</h3>
-            <p class="role">Ses Teknisyeni</p>
-            <p>
-              Stüdyo ve saha ortamlarında kayıt süreci, mikrofon yerleşimi, seviye ayarı ve
-              yayın standartlarına uygun konuşma kaydı.
-            </p>
-            <button class="link-button" type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHeHtCpiBq3Y__J52dY4nGZr">
-              Playlist'i Aç
+          <article class="work-item">
+            <div>
+              <span class="project-type">Podcast</span>
+              <h3>Pınar Sabancı Podcast</h3>
+              <p class="role">Ses Teknisyeni</p>
+            </div>
+            <p>Stüdyo ve saha kayıt süreci, seviye ayarı ve yayın standartlarına uygun konuşma kaydı.</p>
+            <button type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHeHtCpiBq3Y__J52dY4nGZr">
+              Playlist'i aç
             </button>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">YouTube İçeriği</span>
-            <h3>Toyota Türkiye - Proace Cargo</h3>
-            <p class="role">Ses Teknisyeni</p>
-            <p>
-              Kamera önü anlatımlı video içeriğinde diyalog kaydı, görüntü-ses senkronu ve
-              genel yayın kalitesi kontrolü.
-            </p>
-            <button class="link-button" type="button" data-video="https://www.youtube.com/embed/ZBM9y_YMR0g">
-              Videoyu Aç
+          <article class="work-item">
+            <div>
+              <span class="project-type">YouTube Content</span>
+              <h3>Toyota Türkiye - Proace Cargo</h3>
+              <p class="role">Ses Teknisyeni</p>
+            </div>
+            <p>Kamera önü anlatımda diyalog kaydı, görüntü-ses senkronu ve yayın kalitesi kontrolü.</p>
+            <button type="button" data-video="https://www.youtube.com/embed/ZBM9y_YMR0g">
+              Videoyu aç
             </button>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">Dizi Projesi</span>
-            <h3>Deli Zekalılar</h3>
-            <p class="role">Ses Teknisyeni / Boom Operatörü</p>
-            <p>
-              Set ortamında boom ve profesyonel ses ekipmanlarının kurulumu; diyalog ve ortam
-              seslerinin temiz, kullanılabilir şekilde kaydedilmesi.
-            </p>
-            <button class="link-button" type="button" data-video="https://www.youtube.com/embed/r29ogaBobts">
-              Videoyu Aç
+          <article class="work-item">
+            <div>
+              <span class="project-type">Series</span>
+              <h3>Deli Zekalılar</h3>
+              <p class="role">Ses Teknisyeni / Boom Operatörü</p>
+            </div>
+            <p>Set ortamında boom operasyonu, ekipman kurulumu, diyalog ve ortam sesi kaydı.</p>
+            <button type="button" data-video="https://www.youtube.com/embed/r29ogaBobts">
+              Videoyu aç
             </button>
           </article>
 
-          <article class="project-card glass">
-            <span class="tag">Sinema Filmi</span>
-            <h3>Kulyas 2: Zikr-i Ayin</h3>
-            <p class="role">Boom Operatörü / Ses Teknisyeni</p>
-            <p>
-              Set sesi operasyonu, boom kullanımı, ekipman kurulumu ve diyalog/ortam sesi
-              kayıt süreçlerinde aktif görev.
-            </p>
+          <article class="work-item">
+            <div>
+              <span class="project-type">Feature Film</span>
+              <h3>Kulyas 2: Zikr-i Ayin</h3>
+              <p class="role">Boom Operatörü / Ses Teknisyeni</p>
+            </div>
+            <p>Set sesi operasyonu, boom kullanımı, ekipman kurulumu ve diyalog/ortam sesi kaydı.</p>
             <a href="https://www.imdb.com/title/tt37195953/?ref_=nm_flmg_job_1_accord_1_cdt_c_1" target="_blank" rel="noreferrer">
-              imdb.com/title/tt37195953
+              IMDb sayfası
             </a>
           </article>
         </div>
       </section>
 
-      <section id="linkler" class="section links-section glass">
+      <section id="video" class="section video-section">
         <div class="section-heading">
-          <p class="eyebrow">Ayrılmış Linkler</p>
-          <h2>CV'deki tüm bağlantılar</h2>
+          <p class="eyebrow">Link vitrini</p>
+          <h2>Videolar ve doğrulama linkleri</h2>
         </div>
-        <div class="link-columns">
+        <div class="link-board">
+          <div>
+            <h3>Videolar</h3>
+            <button type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHda1czR6iuQpJICEDJZNJSd">Mantra Podcast playlist</button>
+            <button type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHeHtCpiBq3Y__J52dY4nGZr">Pınar Sabancı Podcast playlist</button>
+            <button type="button" data-video="https://www.youtube.com/embed/ZBM9y_YMR0g">Toyota Proace Cargo video</button>
+            <button type="button" data-video="https://www.youtube.com/embed/r29ogaBobts">Deli Zekalılar video</button>
+          </div>
           <div>
             <h3>Dokümanlar</h3>
             <a href="https://docs.google.com/document/d/1kVroE2wuCbxUsmCOOGvt4xYg0FcDeMLS1tJkLMrzoxo/edit?usp=sharing" target="_blank" rel="noreferrer">PUBG Mobile Türkiye - Google Docs</a>
@@ -228,58 +230,55 @@
             <a href="https://www.imdb.com/title/tt35726546/" target="_blank" rel="noreferrer">Defne - IMDb</a>
             <a href="https://www.imdb.com/title/tt37195953/?ref_=nm_flmg_job_1_accord_1_cdt_c_1" target="_blank" rel="noreferrer">Kulyas 2: Zikr-i Ayin - IMDb</a>
           </div>
-          <div>
-            <h3>Video</h3>
-            <button type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHda1czR6iuQpJICEDJZNJSd">Mantra Podcast playlist</button>
-            <button type="button" data-video="https://www.youtube.com/embed/videoseries?list=PLFZnixOxPFHeHtCpiBq3Y__J52dY4nGZr">Pınar Sabancı Podcast playlist</button>
-            <button type="button" data-video="https://www.youtube.com/embed/ZBM9y_YMR0g">Toyota Proace Cargo video</button>
-            <button type="button" data-video="https://www.youtube.com/embed/r29ogaBobts">Deli Zekalılar video</button>
+        </div>
+      </section>
+
+      <section id="cv" class="section cv-section">
+        <div class="section-heading">
+          <p class="eyebrow">CV</p>
+          <h2>Eğitim ve teknik yetkinlikler</h2>
+        </div>
+        <div class="cv-grid">
+          <div class="timeline-panel">
+            <h3>Eğitim</h3>
+            <ol class="timeline">
+              <li>
+                <span>2014 - 2022</span>
+                <strong>Mimar Sinan Güzel Sanatlar Üniversitesi Devlet Konservatuvarı</strong>
+                <p>Klasik Gitar / Müzik Bölümü - Lise Diploması</p>
+              </li>
+              <li>
+                <span>2022 - 2024</span>
+                <strong>Bahçeşehir Üniversitesi</strong>
+                <p>Ses ve Müzik Teknolojileri - Lisans (Terk)</p>
+              </li>
+              <li>
+                <span>2024 - Devam Ediyor</span>
+                <strong>Galatasaray ITM</strong>
+                <p>Ses ve Müzik Teknolojileri - Eğitim Programı</p>
+              </li>
+            </ol>
+          </div>
+          <div class="skills-panel">
+            <h3>Yetkinlikler</h3>
+            <ul class="skills">
+              <li>Stüdyo ve canlı kayıt süreçleri</li>
+              <li>Shotgun, lavalier ve saha mikrofonlama</li>
+              <li>Ses sinyal akışı ve ekipman yönetimi</li>
+              <li>Miksaj, düzenleme ve diyalog temizleme</li>
+              <li>Akustik, ses tasarımı ve elektronik müzik teorisi</li>
+              <li>Sahne kurulumu ve teknik koordinasyon</li>
+              <li>Pro Tools, Studio One ve Logic Pro X</li>
+              <li>Ekip içi iletişim ve saha koordinasyonu</li>
+            </ul>
+            <a class="button primary full" href="assets/bulut-gurgeli-cv.pdf" target="_blank" rel="noreferrer">
+              PDF CV'yi görüntüle
+            </a>
           </div>
         </div>
       </section>
 
-      <section id="cv" class="section cv-grid">
-        <div class="glass">
-          <p class="eyebrow">Eğitim</p>
-          <h2>Akademik Geçmiş</h2>
-          <ol class="timeline">
-            <li>
-              <span>2014 - 2022</span>
-              <strong>Mimar Sinan Güzel Sanatlar Üniversitesi Devlet Konservatuvarı</strong>
-              <p>Klasik Gitar / Müzik Bölümü - Lise Diploması</p>
-            </li>
-            <li>
-              <span>2022 - 2024</span>
-              <strong>Bahçeşehir Üniversitesi</strong>
-              <p>Ses ve Müzik Teknolojileri - Lisans (Terk)</p>
-            </li>
-            <li>
-              <span>2024 - Devam Ediyor</span>
-              <strong>Galatasaray ITM</strong>
-              <p>Ses ve Müzik Teknolojileri - Eğitim Programı</p>
-            </li>
-          </ol>
-        </div>
-        <div class="glass">
-          <p class="eyebrow">Yetkinlikler</p>
-          <h2>Teknik Alanlar</h2>
-          <ul class="skills">
-            <li>Stüdyo ve canlı kayıt süreçleri</li>
-            <li>Shotgun, lavalier ve saha mikrofonlama</li>
-            <li>Ses sinyal akışı ve ekipman yönetimi</li>
-            <li>Miksaj, düzenleme ve diyalog temizleme</li>
-            <li>Akustik, ses tasarımı ve elektronik müzik teorisi</li>
-            <li>Sahne kurulumu ve teknik koordinasyon</li>
-            <li>Pro Tools, Studio One ve Logic Pro X</li>
-            <li>Ekip içi iletişim ve saha koordinasyonu</li>
-          </ul>
-          <a class="button primary full" href="assets/bulut-gurgeli-cv.pdf" target="_blank" rel="noreferrer">
-            PDF CV'yi Görüntüle
-          </a>
-        </div>
-      </section>
-
-      <section id="iletisim" class="section contact glass">
+      <section id="iletisim" class="contact-section">
         <div>
           <p class="eyebrow">İletişim</p>
           <h2>Yeni proje ve set işleri için ulaşın.</h2>
