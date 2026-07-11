@@ -363,30 +363,7 @@ window.addEventListener('scroll', () => {
   }
 });
 
-/* --- 7. YouTube Lazy Loading --- */
-const lazyFrames = document.querySelectorAll('.video-grid iframe, .card-video-grid iframe');
-const frameObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const iframe = entry.target;
-      if (iframe.dataset.lazySrc) {
-        iframe.src = iframe.dataset.lazySrc;
-        iframe.removeAttribute('data-lazy-src');
-      }
-      frameObserver.unobserve(iframe);
-    }
-  });
-}, { rootMargin: '200px' });
 
-// On load, swap src to data-lazy-src for offscreen iframes
-lazyFrames.forEach(iframe => {
-  const rect = iframe.getBoundingClientRect();
-  if (rect.top > window.innerHeight + 200) {
-    iframe.dataset.lazySrc = iframe.src;
-    iframe.src = '';
-    frameObserver.observe(iframe);
-  }
-});
 
 /* --- Apply saved language preference (must be last) --- */
 applyLanguage(localStorage.getItem("preferredLanguage") || "tr");
