@@ -294,46 +294,7 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
 
-/* --- 2. Custom Cursor (non-touch only) --- */
-if (window.matchMedia("(pointer: fine)").matches) {
-  document.body.classList.add('custom-cursor');
-  const cursorDot = document.getElementById('cursor-dot');
-  const cursorRing = document.getElementById('cursor-ring');
 
-  if (cursorDot && cursorRing) {
-    let mouseX = 0, mouseY = 0;
-    let ringX = 0, ringY = 0;
-
-    document.addEventListener('mousemove', e => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      cursorDot.style.left = mouseX + 'px';
-      cursorDot.style.top = mouseY + 'px';
-    });
-
-    // Smooth ring follow
-    function animateRing() {
-      ringX += (mouseX - ringX) * 0.15;
-      ringY += (mouseY - ringY) * 0.15;
-      cursorRing.style.left = ringX + 'px';
-      cursorRing.style.top = ringY + 'px';
-      requestAnimationFrame(animateRing);
-    }
-    animateRing();
-
-    const hoverTargets = document.querySelectorAll('a, button, iframe, .work-card, .video-tile');
-    hoverTargets.forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursorDot.classList.add('is-hovering');
-        cursorRing.classList.add('is-hovering');
-      });
-      el.addEventListener('mouseleave', () => {
-        cursorDot.classList.remove('is-hovering');
-        cursorRing.classList.remove('is-hovering');
-      });
-    });
-  }
-}
 
 /* --- 3. Card Tilt Effect --- */
 document.querySelectorAll('.work-card').forEach(card => {
