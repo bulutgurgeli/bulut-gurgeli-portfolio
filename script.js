@@ -95,6 +95,7 @@ const translations = {
     emailLabel: "E-posta",
     phoneLabel: "Telefon",
     backTop: "Yukarı dön",
+    developedBy: "Tasarım & Kodlama:",
     videoAria: "Video oynatıcı",
     closeVideoAria: "Videoyu kapat",
     videoTitle: "Portfolyo videosu",
