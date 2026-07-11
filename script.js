@@ -549,3 +549,39 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
     setTimeout(() => { status.textContent = ""; }, 5000);
   });
 }
+
+// Visitor Analytics (Traffic Source)
+document.addEventListener("DOMContentLoaded", () => {
+  if (!sessionStorage.getItem("visited_log_sent")) {
+    sessionStorage.setItem("visited_log_sent", "true");
+    
+    const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
+    const userAgent = navigator.userAgent;
+    let deviceType = "Masaüstü (PC)";
+    if (/android/i.test(userAgent)) deviceType = "Android Mobil";
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "iOS Mobil";
+
+    const screenRes = `${window.screen.width}x${window.screen.height}`;
+    
+    const payload = {
+      embeds: [{
+        title: "👀 Yeni Bir Ziyaretçi Geldi!",
+        color: 3447003, // Mavi renk
+        fields: [
+          { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
+          { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
+          { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
+          { name: "🌍 Tarayıcı Dili", value: navigator.language, inline: true }
+        ],
+        footer: { text: "Bulut Gürgeli Analytics" },
+        timestamp: new Date().toISOString()
+      }]
+    };
+
+    fetch("https://discord.com/api/webhooks/1501344147141951560/dOdk1MWiKgMxe7Yx1T_LXvGVRIGlNmkY6HQklQ9fC4Fn6fsFjmuew82A9DdOYBi7eN94", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).catch(e => console.log("Analytics error"));
+  }
+});
