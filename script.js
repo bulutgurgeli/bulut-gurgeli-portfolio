@@ -16,6 +16,7 @@ const translations = {
     navWatch: "İzle",
     navCv: "CV",
     navContact: "İletişim",
+    sinceMark: "since ® 2024",
     heroKicker: "Prodüksiyon sesi / boom / post",
     heroLead:
       "İstanbul merkezli ses mühendisi. Film, reklam, oyun ve podcast işlerinde temiz diyalog, kontrollü set kaydı, miksaj ve frame-perfect senkron.",
@@ -27,6 +28,7 @@ const translations = {
     locationLabel: "Lokasyon",
     locationValue: "İstanbul, Türkiye",
     toolsLabel: "Araçlar",
+    servicesAria: "Servis alanları",
     profileKicker: "Profil",
     profileTitle: "Sette pratik, postta detaycı.",
     profileBody:
@@ -99,6 +101,7 @@ const translations = {
     navWatch: "Watch",
     navCv: "CV",
     navContact: "Contact",
+    sinceMark: "since ® 2024",
     heroKicker: "Production sound / boom / post",
     heroLead:
       "Istanbul-based sound engineer working across film, advertising, games, and podcasts with clean dialogue, controlled location sound, mixing, and frame-perfect sync.",
@@ -110,6 +113,7 @@ const translations = {
     locationLabel: "Location",
     locationValue: "Istanbul, Turkey",
     toolsLabel: "Tools",
+    servicesAria: "Service areas",
     profileKicker: "Profile",
     profileTitle: "Fast on set, detailed in post.",
     profileBody:
