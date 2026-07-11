@@ -100,6 +100,12 @@ const translations = {
     closeVideoAria: "Videoyu kapat",
     videoTitle: "Portfolyo videosu",
     mediaPlaylistLabel: "Video / Reels playlist",
+    formName: "Adınız",
+    formEmail: "E-posta Adresiniz",
+    formMessage: "Mesajınız",
+    formSubmit: "Gönder",
+    formSuccess: "Mesajınız başarıyla gönderildi!",
+    formError: "Bir hata oluştu, lütfen tekrar deneyin."
   },
   en: {
     pageTitle: "Bulut Gürgeli | Sound Portfolio",
@@ -194,6 +200,12 @@ const translations = {
     closeVideoAria: "Close video",
     videoTitle: "Portfolio video",
     mediaPlaylistLabel: "Video / Reels playlist",
+    formName: "Your Name",
+    formEmail: "Your Email",
+    formMessage: "Your Message",
+    formSubmit: "Send Message",
+    formSuccess: "Your message has been sent successfully!",
+    formError: "An error occurred, please try again."
   },
 };
 
@@ -466,4 +478,74 @@ if (dynamicText) {
   }
 
   setTimeout(typeEffect, 1000);
+}
+
+// Contact Form Webhook Logic
+const contactForm = document.getElementById("contact-form");
+if (contactForm) {
+  contactForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("submit-btn");
+    const status = document.getElementById("form-status");
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
+    const currentLang = document.documentElement.lang;
+
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    
+    // IP bilgisi alma (kullanıcıya zarar vermeyen anonim public IP)
+    fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(data => {
+        sendToDiscord(name, email, message, data.ip, currentLang, btn, status);
+      })
+      .catch(() => {
+        sendToDiscord(name, email, message, "Alınamadı", currentLang, btn, status);
+      });
+  });
+}
+
+function sendToDiscord(name, email, message, ip, lang, btn, status) {
+  const webhookURL = "https://discord.com/api/webhooks/1501344147141951560/dOdk1MWiKgMxe7Yx1T_LXvGVRIGlNmkY6HQklQ9fC4Fn6fsFjmuew82A9DdOYBi7eN94";
+  
+  const payload = {
+    embeds: [{
+      title: "📩 Yeni İletişim Formu Mesajı",
+      color: 10617599, // Morumsu bir renk (#a282ff)
+      fields: [
+        { name: "👤 İsim", value: name, inline: true },
+        { name: "📧 E-posta", value: email, inline: true },
+        { name: "🌐 IP Adresi", value: ip, inline: true },
+        { name: "💬 Mesaj", value: message }
+      ],
+      footer: { text: "Bulut Gürgeli Portfolio" },
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(response => {
+    if (response.ok) {
+      status.textContent = translations[lang].formSuccess;
+      status.style.color = "#4CAF50";
+      document.getElementById("contact-form").reset();
+    } else {
+      throw new Error("Network response was not ok");
+    }
+  })
+  .catch(error => {
+    status.textContent = translations[lang].formError;
+    status.style.color = "#F44336";
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    setTimeout(() => { status.textContent = ""; }, 5000);
+  });
 }
