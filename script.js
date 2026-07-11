@@ -41,6 +41,7 @@ const translations = {
     worksTitle: "CV'deki işlerden modern portfolyo vitrini.",
     pubgType: "Oyun / Marka",
     docsLabel: "Doküman",
+    docPreviewLabel: "Doküman / proje özeti",
     soundTechFreelance: "Ses Teknisyeni - Freelance / Proje Bazlı",
     pubgBody:
       "Profesyonel kayıt ekipmanı kurulumu, diyalog, oyun içi efekt ve atmosfer kayıtları; diyalog temizliği, miksaj ve görüntü-ses senkronizasyonu.",
@@ -48,6 +49,7 @@ const translations = {
     vodafoneBody:
       "Shotgun, lavalier ve field recorder ile diyalog, atmosfer, efekt, jingle senkronu, noise reduction ve dinamik miksaj süreçleri.",
     shortFilmType: "Kısa Film",
+    imdbPreviewLabel: "IMDb / proje sayfası",
     boomOperator: "Boom Operatörü",
     defneBody: "Shotgun, boom pole ve lavalier ile diyalog ve atmosfer kayıtları.",
     playButton: "Oynat",
@@ -129,6 +131,7 @@ const translations = {
     worksTitle: "A modern portfolio showcase built from CV credits.",
     pubgType: "Game / Brand",
     docsLabel: "Docs",
+    docPreviewLabel: "Document / project brief",
     soundTechFreelance: "Sound Technician - Freelance / Project-Based",
     pubgBody:
       "Professional recording equipment setup, dialogue, in-game effects and ambience recording; dialogue cleanup, mixing, and audio-picture synchronization.",
@@ -136,6 +139,7 @@ const translations = {
     vodafoneBody:
       "Dialogue, ambience, effects, jingle sync, noise reduction, and dynamic mixing using shotgun, lavalier, and field recorder workflows.",
     shortFilmType: "Short Film",
+    imdbPreviewLabel: "IMDb / project page",
     boomOperator: "Boom Operator",
     defneBody: "Dialogue and ambience recording with shotgun, boom pole, and lavalier equipment.",
     playButton: "Play",

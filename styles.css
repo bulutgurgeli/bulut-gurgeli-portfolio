@@ -610,6 +610,68 @@ p {
     #080710;
 }
 
+.poster-preview {
+  display: grid;
+  place-items: center;
+}
+
+.poster-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(135deg, rgba(0, 0, 0, 0.8), transparent 82%);
+}
+
+.poster-preview .media-placeholder {
+  position: relative;
+  z-index: 1;
+}
+
+.poster-preview a,
+.media-placeholder a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--acid), var(--cyan));
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.pubg-poster {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 196, 87, 0.28), transparent 14rem),
+    linear-gradient(135deg, rgba(32, 24, 10, 0.92), rgba(124, 60, 255, 0.3)),
+    #080710;
+}
+
+.vodafone-poster {
+  background:
+    radial-gradient(circle at 82% 20%, rgba(255, 92, 124, 0.34), transparent 14rem),
+    linear-gradient(135deg, rgba(58, 8, 24, 0.92), rgba(255, 122, 223, 0.32)),
+    #080710;
+}
+
+.film-poster {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(117, 231, 255, 0.2), transparent 15rem),
+    linear-gradient(135deg, rgba(8, 7, 16, 0.96), rgba(42, 58, 92, 0.44)),
+    #080710;
+}
+
+.kulyas-poster {
+  background:
+    radial-gradient(circle at 72% 18%, rgba(201, 167, 255, 0.26), transparent 16rem),
+    linear-gradient(135deg, rgba(8, 7, 16, 0.96), rgba(82, 28, 78, 0.48)),
+    #080710;
+}
+
 .media-placeholder {
   display: grid;
   gap: 12px;
