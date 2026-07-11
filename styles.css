@@ -174,7 +174,6 @@ button {
   background: var(--paper);
 }
 
-.hero,
 .section,
 .contact-panel,
 .site-footer {
@@ -203,8 +202,9 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
   min-height: calc(100vh - 78px);
-  padding: clamp(26px, 5vw, 60px);
+  padding: clamp(26px, 5vw, 60px) max(14px, calc((100vw - 1240px) / 2));
   overflow: hidden;
   color: var(--paper);
   background: #050509;
@@ -217,18 +217,19 @@ button {
   position: absolute;
   top: -20%;
   right: -10%;
-  width: 70vw;
-  height: 70vw;
-  background: radial-gradient(circle at center, rgba(124, 60, 255, 0.15), rgba(117, 231, 255, 0.05) 40%, transparent 70%);
-  filter: blur(80px);
-  animation: aurora 15s ease-in-out infinite alternate;
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(circle at center, rgba(124, 60, 255, 0.4), rgba(117, 231, 255, 0.15) 50%, transparent 70%);
+  filter: blur(90px);
+  animation: aurora 8s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
 }
 
 @keyframes aurora {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-5%, 10%) scale(1.1); }
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.6; }
+  50% { transform: translate(-10%, 15%) scale(1.2) rotate(10deg); opacity: 0.9; }
+  100% { transform: translate(5%, 5%) scale(1.1) rotate(-5deg); opacity: 0.7; }
 }
 
 .since-mark {
@@ -515,7 +516,8 @@ p {
 }
 .marquee-track {
   display: flex; flex-shrink: 0;
-  animation: marqueeScroll 35s linear infinite;
+  width: fit-content;
+  animation: marqueeScroll 20s linear infinite;
 }
 .marquee-track span {
   flex: 0 0 auto; min-height: 70px;
