@@ -508,7 +508,7 @@ if (contactForm) {
 }
 
 function sendToDiscord(name, email, message, ip, lang, btn, status) {
-  const webhookURL = "https://discord.com/api/webhooks/1501344147141951560/dOdk1MWiKgMxe7Yx1T_LXvGVRIGlNmkY6HQklQ9fC4Fn6fsFjmuew82A9DdOYBi7eN94";
+  const webhookURL = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
   
   const payload = {
     embeds: [{
@@ -558,10 +558,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
     const userAgent = navigator.userAgent;
     let deviceType = "Masaüstü (PC)";
-    if (/android/i.test(userAgent)) deviceType = "Android Mobil";
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "iOS Mobil";
+    if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
+
+    let browserInfo = "Bilinmiyor";
+    if (userAgent.indexOf("Firefox") > -1) browserInfo = "Firefox";
+    else if (userAgent.indexOf("SamsungBrowser") > -1) browserInfo = "Samsung Browser";
+    else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browserInfo = "Opera";
+    else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) browserInfo = "Edge";
+    else if (userAgent.indexOf("Chrome") > -1) browserInfo = "Chrome";
+    else if (userAgent.indexOf("Safari") > -1) browserInfo = "Safari";
+
+    let osInfo = "Bilinmiyor";
+    if (userAgent.indexOf("Win") > -1) osInfo = "Windows";
+    else if (userAgent.indexOf("Mac") > -1) osInfo = "MacOS";
+    else if (userAgent.indexOf("Linux") > -1) osInfo = "Linux";
+    if (/android/i.test(userAgent)) osInfo = "Android";
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
 
     const screenRes = `${window.screen.width}x${window.screen.height}`;
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
     
     const payload = {
       embeds: [{
@@ -569,16 +586,19 @@ document.addEventListener("DOMContentLoaded", () => {
         color: 3447003, // Mavi renk
         fields: [
           { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
+          { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
+          { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
           { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
           { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
-          { name: "🌍 Tarayıcı Dili", value: navigator.language, inline: true }
+          { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
+          { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
         ],
         footer: { text: "Bulut Gürgeli Analytics" },
         timestamp: new Date().toISOString()
       }]
     };
 
-    fetch("https://discord.com/api/webhooks/1501344147141951560/dOdk1MWiKgMxe7Yx1T_LXvGVRIGlNmkY6HQklQ9fC4Fn6fsFjmuew82A9DdOYBi7eN94", {
+    fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
