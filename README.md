@@ -1,42 +1,25 @@
 # Bulut Gürgeli Portfolyo Sitesi
 
-Bu proje, Bulut Gürgeli için ses teknisyeni/ses mühendisi portfolyo sitesidir. Düz HTML, CSS ve JavaScript ile hazırlandığı için ücretsiz statik hostinglerde kolayca yayınlanabilir.
+Bulut Gürgeli için modern glassmorphism temalı statik portfolyo sitesi.
 
-## Düzenlenecek Yerler
+## İçerik
 
-- `index.html`: İsim, işler, hizmet açıklamaları, e-posta, telefon ve sosyal medya linkleri.
-- `assets/bulut-gurgeli-cv.pdf`: CV dosyasını bu adla bu klasöre ekleyin.
-- `styles.css`: Renkler, boşluklar ve responsive tasarım.
+- CV'den alınan özet, eğitim, yetkinlik ve proje bilgileri.
+- Google Docs, IMDb ve YouTube bağlantıları ayrı link alanlarında görünür.
+- YouTube video ve playlist bağlantıları sayfa içinde açılır modal olarak oynar.
+- CV PDF dosyası `assets/bulut-gurgeli-cv.pdf` yolu üzerinden yayınlanır.
 
-## Ücretsiz Yayınlama Seçenekleri
+## Düzenleme
 
-### GitHub Pages
+- Ana içerik: `index.html`
+- Görsel tema: `styles.css`
+- Mobil menü ve video modalı: `script.js`
+- CV dosyası: `assets/bulut-gurgeli-cv.pdf`
 
-1. GitHub'da yeni bir repository oluşturun.
-2. Bu klasördeki dosyaları repository'ye yükleyin.
-3. Repository ayarlarında `Pages` bölümünden `main` branch ve `/root` seçin.
-4. Site genelde `https://kullaniciadi.github.io/repository-adi/` adresinde yayınlanır.
+Instagram video linkleri eklenecekse `index.html` içindeki `#linkler` bölümüne ayrı buton veya kart olarak eklenebilir. Instagram gömme davranışı platform izinlerine bağlı olduğundan doğrudan link de görünür tutulmalıdır.
 
-### Netlify
+## Yayın
 
-1. Netlify hesabı açın.
-2. `Add new site` üzerinden bu klasörü veya GitHub repository'sini bağlayın.
-3. Build komutu gerekmez, publish directory olarak proje kökünü seçin.
-4. Netlify ücretsiz bir `netlify.app` alt alan adı verir.
+Site GitHub Pages üzerinde yayınlanır:
 
-### Vercel
-
-1. Vercel hesabı açın.
-2. GitHub repository'sini import edin.
-3. Framework seçmeden statik proje olarak deploy edin.
-4. Vercel ücretsiz bir `vercel.app` alt alan adı verir.
-
-## Ücretsiz Alan Adı Notu
-
-Tamamen ücretsiz ve güvenilir özel alan adları sınırlıdır. En sorunsuz ücretsiz seçenekler genellikle platform alt alan adlarıdır:
-
-- `kullaniciadi.github.io`
-- `site-adi.netlify.app`
-- `site-adi.vercel.app`
-
-Profesyonel görünüm için ileride düşük maliyetli bir `.com`, `.net`, `.me` veya `.dev` alan adı alınabilir.
+https://bulutgurgeli.github.io/bulut-gurgeli-portfolio/
