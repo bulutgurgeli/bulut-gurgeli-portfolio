@@ -703,16 +703,7 @@ p {
   aspect-ratio: 16 / 9;
 }
 
-.poster-preview::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 34px 34px;
-  mask-image: linear-gradient(135deg, rgba(0, 0, 0, 0.8), transparent 82%);
-}
+
 
 .poster-preview .media-placeholder {
   position: relative;
@@ -1345,4 +1336,7 @@ p {
   background-color: #f00;
   border-color: #f00;
   transform: translate(-50%, -50%) scale(1.05);
+}
+.playlist-preview .yt-play-btn {
+  display: none !important;
 }
