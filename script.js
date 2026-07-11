@@ -423,3 +423,46 @@ document.querySelectorAll('.lite-youtube').forEach(div => {
 
 /* --- Apply saved language preference (must be last) --- */
 applyLanguage(localStorage.getItem("preferredLanguage") || "tr");
+
+/* --- Typing Animation for Kicker --- */
+const dynamicText = document.querySelector('.dynamic-text');
+if (dynamicText) {
+  const typeTexts = {
+    tr: ["Film & Dizi Sesi", "Set İçi Boom Operatörü", "Post Prodüksiyon & Miksaj"],
+    en: ["Film & TV Sound", "On-Set Boom Operator", "Post Production & Mixing"]
+  };
+  let typeWordIndex = 0;
+  let typeCharIndex = 0;
+  let isDeleting = false;
+
+  function typeEffect() {
+    const currentLang = document.documentElement.lang === "en" ? "en" : "tr";
+    const currentTexts = typeTexts[currentLang];
+    
+    if (typeWordIndex >= currentTexts.length) typeWordIndex = 0;
+    const currentWord = currentTexts[typeWordIndex];
+    
+    if (isDeleting) {
+      dynamicText.textContent = currentWord.substring(0, typeCharIndex - 1);
+      typeCharIndex--;
+    } else {
+      dynamicText.textContent = currentWord.substring(0, typeCharIndex + 1);
+      typeCharIndex++;
+    }
+
+    let typeSpeed = isDeleting ? 40 : 80;
+
+    if (!isDeleting && typeCharIndex === currentWord.length) {
+      typeSpeed = 2000; // Pause at the end of word
+      isDeleting = true;
+    } else if (isDeleting && typeCharIndex === 0) {
+      isDeleting = false;
+      typeWordIndex = (typeWordIndex + 1) % currentTexts.length;
+      typeSpeed = 400; // Pause before typing next word
+    }
+
+    setTimeout(typeEffect, typeSpeed);
+  }
+
+  setTimeout(typeEffect, 1000);
+}
