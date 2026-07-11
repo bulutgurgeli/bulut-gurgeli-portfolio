@@ -55,7 +55,7 @@ const translations = {
     playButton: "Oynat",
     previewLabel: "Sessiz otomatik önizleme",
     playlistLabel: "Playlist",
-    openYoutube: "YouTube’da aç",
+    openYoutube: "YouTube'da aç",
     soundTech: "Ses Teknisyeni",
     mantraBody: "Mikrofon pozisyonlama, gain staging ve dengeli konuşma kaydı.",
     pinarBody: "Stüdyo ve saha ortamlarında yayın standardına uygun konuşma kaydı.",
@@ -70,7 +70,7 @@ const translations = {
     watchTitle: "CV linklerinden çıkan tüm video bağlantıları proje bazlı playlistlerde.",
     pubgPlaylistTitle: "Instagram Reels + YouTube videoları",
     vodafonePlaylistTitle: "Instagram Reels + YouTube videoları",
-    otherPlaylistTitle: "CV’deki diğer video bağlantıları",
+    otherPlaylistTitle: "CV'deki diğer video bağlantıları",
     mantraPlaylist: "Mantra Oynatma Listesi",
     pinarPlaylist: "Pınar Sabancı Oynatma Listesi",
     toyotaVideo: "Toyota Videosu",
@@ -98,6 +98,7 @@ const translations = {
     videoAria: "Video oynatıcı",
     closeVideoAria: "Videoyu kapat",
     videoTitle: "Portfolyo videosu",
+    mediaPlaylistLabel: "Video / Reels playlist",
   },
   en: {
     pageTitle: "Bulut Gürgeli | Sound Portfolio",
@@ -191,6 +192,7 @@ const translations = {
     videoAria: "Video player",
     closeVideoAria: "Close video",
     videoTitle: "Portfolio video",
+    mediaPlaylistLabel: "Video / Reels playlist",
   },
 };
 
@@ -274,4 +276,156 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.querySelector("#year").textContent = new Date().getFullYear();
+
+/* ========================================================================
+   NEW FEATURES — Scroll Reveal, Custom Cursor, Card Tilt, Marquee,
+                  Hero Wave, Parallax, YouTube Lazy Loading
+   ======================================================================== */
+
+/* --- 1. Scroll Reveal (IntersectionObserver) --- */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+/* --- 2. Custom Cursor (non-touch only) --- */
+if (!('ontouchstart' in window)) {
+  document.body.classList.add('custom-cursor');
+  const cursorDot = document.getElementById('cursor-dot');
+  const cursorRing = document.getElementById('cursor-ring');
+
+  if (cursorDot && cursorRing) {
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.left = mouseX + 'px';
+      cursorDot.style.top = mouseY + 'px';
+    });
+
+    // Smooth ring follow
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.15;
+      ringY += (mouseY - ringY) * 0.15;
+      cursorRing.style.left = ringX + 'px';
+      cursorRing.style.top = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    const hoverTargets = document.querySelectorAll('a, button, iframe, .work-card, .video-tile');
+    hoverTargets.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursorDot.classList.add('is-hovering');
+        cursorRing.classList.add('is-hovering');
+      });
+      el.addEventListener('mouseleave', () => {
+        cursorDot.classList.remove('is-hovering');
+        cursorRing.classList.remove('is-hovering');
+      });
+    });
+  }
+}
+
+/* --- 3. Card Tilt Effect --- */
+document.querySelectorAll('.work-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    card.style.setProperty('--mouse-x', x + 'px');
+    card.style.setProperty('--mouse-y', y + 'px');
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+/* --- 4. Service Rail Marquee Setup --- */
+const marqueeTrack = document.querySelector('.marquee-track');
+if (marqueeTrack) {
+  const content = marqueeTrack.innerHTML;
+  marqueeTrack.innerHTML = content + content;
+}
+
+/* --- 5. Hero Wave SVG Generation --- */
+const heroWave = document.getElementById('hero-wave');
+if (heroWave) {
+  const barCount = 60;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const viewWidth = 1200;
+  const barWidth = 6;
+  const gap = viewWidth / barCount;
+
+  for (let i = 0; i < barCount; i++) {
+    const rect = document.createElementNS(svgNS, 'rect');
+    const height = 20 + Math.random() * 50;
+    rect.setAttribute('x', i * gap);
+    rect.setAttribute('y', 80 - height);
+    rect.setAttribute('width', barWidth);
+    rect.setAttribute('height', height);
+    rect.setAttribute('rx', 3);
+    rect.style.animationDelay = (Math.random() * 2) + 's';
+    heroWave.appendChild(rect);
+  }
+}
+
+/* --- 6. Parallax Effect --- */
+const heroMain = document.querySelector('.hero-main');
+let ticking = false;
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const scrolled = window.pageYOffset;
+      if (heroMain && scrolled < window.innerHeight) {
+        heroMain.style.backgroundPositionY = (scrolled * 0.4) + 'px';
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+/* --- 7. YouTube Lazy Loading --- */
+const lazyFrames = document.querySelectorAll('.video-grid iframe, .card-video-grid iframe');
+const frameObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const iframe = entry.target;
+      if (iframe.dataset.lazySrc) {
+        iframe.src = iframe.dataset.lazySrc;
+        iframe.removeAttribute('data-lazy-src');
+      }
+      frameObserver.unobserve(iframe);
+    }
+  });
+}, { rootMargin: '200px' });
+
+// On load, swap src to data-lazy-src for offscreen iframes
+lazyFrames.forEach(iframe => {
+  const rect = iframe.getBoundingClientRect();
+  if (rect.top > window.innerHeight + 200) {
+    iframe.dataset.lazySrc = iframe.src;
+    iframe.src = '';
+    frameObserver.observe(iframe);
+  }
+});
+
+/* --- Apply saved language preference (must be last) --- */
 applyLanguage(localStorage.getItem("preferredLanguage") || "tr");
