@@ -555,15 +555,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
     let batteryInfo = "Desteklenmiyor";
     
-    // IP Fetch
-    const ipPromise = fetch("https://ipapi.co/json/")
+    // IP Fetch (ipapi.co rate limit veya AdBlock yediği için daha güçlü API'lere geçildi)
+    const ipPromise = fetch("https://ipinfo.io/json")
       .then(res => res.json())
       .then(data => {
         locationData.ip = data.ip || "Bulunamadı";
-        locationData.location = `${data.city || "Bilinmiyor"}, ${data.country_name || "Bilinmiyor"}`;
+        locationData.location = `${data.city || "Bilinmiyor"}, ${data.country || "Bilinmiyor"}`;
         locationData.isp = data.org || "Bilinmiyor";
       })
-      .catch(() => {});
+      .catch(() => {
+        // İkinci bir yedek API (Sadece IP için)
+        return fetch("https://api.ipify.org?format=json")
+          .then(res => res.json())
+          .then(data => {
+             locationData.ip = data.ip || "Bulunamadı";
+          }).catch(() => {});
+      });
 
     // Battery Fetch
     const batteryPromise = navigator.getBattery ? navigator.getBattery().then(b => {
@@ -676,89 +683,5 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       }).catch(e => console.log("Analytics error"));
-      
-      // ==========================================
-      // GİZLİ AKSİYON TAKİP SİSTEMİ (BACKEND-LIKE)
-      // ==========================================
-      
-      let actionData = {
-        clicks: 0,
-        copiedText: "Hayır",
-        maxScroll: 0,
-        startTime: Date.now(),
-        lastElementClicked: "Hiçbir Şey"
-      };
-
-      // Tıklama Takibi
-      document.addEventListener("click", (e) => {
-        actionData.clicks++;
-        let targetName = e.target.tagName.toLowerCase();
-        if (e.target.innerText) {
-          targetName += ` ("${e.target.innerText.substring(0, 15)}...")`;
-        }
-        actionData.lastElementClicked = targetName;
-      });
-
-      // Kopyalama Takibi
-      document.addEventListener("copy", () => {
-        actionData.copiedText = "Evet (İçerik Çalındı!) ⚠️";
-      });
-
-      // Kaydırma (Scroll) Takibi
-      window.addEventListener("scroll", () => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrollPercent = Math.round((scrollTop / scrollHeight) * 100);
-        if (scrollPercent > actionData.maxScroll) {
-          actionData.maxScroll = scrollPercent;
-        }
-      });
-
-      // Kullanıcı Çıkarken (veya sekmeyi kapatırken) Aksiyon Raporunu Fırlat
-      let reportSent = false;
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "hidden" && !reportSent) {
-          reportSent = true;
-          
-          const timeSpent = Math.round((Date.now() - actionData.startTime) / 1000);
-          const timeSpentFormatted = timeSpent > 60 ? `${Math.floor(timeSpent / 60)} dk ${timeSpent % 60} sn` : `${timeSpent} Saniye`;
-
-          const actionFields = [
-            { name: "🔗 Takip Etiketi / Ziyaretçi", value: safeString(trackingCode) || "Bilinmiyor", inline: false },
-            { name: "⏱️ Sitede Geçirdiği Süre", value: timeSpentFormatted, inline: true },
-            { name: "👆 Toplam Tıklama", value: `${actionData.clicks} Kez`, inline: true },
-            { name: "📜 Max Kaydırma", value: `%${actionData.maxScroll} Aşağı İndi`, inline: true },
-            { name: "📋 Yazı Kopyalandı mı?", value: actionData.copiedText, inline: true },
-            { name: "🎯 Son Tıklanan Öğe", value: actionData.lastElementClicked, inline: false }
-          ];
-
-          const actionPayload = {
-            embeds: [{
-              title: "🕵️‍♂️ Ziyaretçi Çıkış Yaptı - Aksiyon Raporu",
-              color: 15158332, // Kırmızımsı turuncu
-              description: "Kullanıcı siteden ayrıldı. İşte içeride yaptıkları:",
-              fields: actionFields,
-              footer: { text: "Bulut Gürgeli Action Tracker" },
-              timestamp: new Date().toISOString()
-            }]
-          };
-
-          // Çıkış yaparken fetch iptal olmaması için en güvenilir yöntem olan sendBeacon (veya Blob) kullanımı
-          const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-          const blob = new Blob([JSON.stringify(actionPayload)], { type: 'application/json' });
-          
-          if (navigator.sendBeacon) {
-            navigator.sendBeacon(webhookUrl, blob);
-          } else {
-            fetch(webhookUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(actionPayload),
-              keepalive: true 
-            }).catch(() => {});
-          }
-        }
-      });
-
     });
 });
