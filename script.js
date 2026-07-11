@@ -365,5 +365,42 @@ window.addEventListener('scroll', () => {
 
 
 
+
+/* --- 7. Lite YouTube Embeds --- */
+document.querySelectorAll('.lite-youtube').forEach(div => {
+  const vid = div.dataset.vid;
+  const plist = div.dataset.plist;
+  
+  if (vid) {
+    div.style.backgroundImage = `url(https://i.ytimg.com/vi/${vid}/hqdefault.jpg)`;
+  } else if (plist) {
+    div.style.background = 'linear-gradient(135deg, rgba(16, 12, 32, 0.9), rgba(67, 30, 148, 0.5))';
+  }
+
+  const playBtn = document.createElement('button');
+  playBtn.className = 'yt-play-btn';
+  playBtn.setAttribute('aria-label', 'Play video');
+  div.appendChild(playBtn);
+
+  div.addEventListener('click', () => {
+    const iframe = document.createElement('iframe');
+    iframe.width = "100%";
+    iframe.height = "100%";
+    iframe.title = div.getAttribute('aria-label') || "YouTube video";
+    iframe.frameBorder = "0";
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
+    
+    if (vid) {
+      iframe.src = `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`;
+    } else if (plist) {
+      iframe.src = `https://www.youtube.com/embed/videoseries?list=${plist}&autoplay=1&rel=0`;
+    }
+    
+    div.innerHTML = '';
+    div.appendChild(iframe);
+  });
+});
+
 /* --- Apply saved language preference (must be last) --- */
 applyLanguage(localStorage.getItem("preferredLanguage") || "tr");
