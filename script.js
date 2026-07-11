@@ -550,80 +550,85 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
   });
 }
 
-// Visitor Analytics (Traffic Source)
+// Visitor Analytics (Traffic Source & Time on Site)
 document.addEventListener("DOMContentLoaded", () => {
   if (!sessionStorage.getItem("visited_log_sent")) {
-    sessionStorage.setItem("visited_log_sent", "true");
-    
-    const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
-    const userAgent = navigator.userAgent;
-    let deviceType = "Masaüstü (PC)";
-    if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
+    const startTime = Date.now();
+    let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
 
-    let browserInfo = "Bilinmiyor";
-    if (userAgent.indexOf("Firefox") > -1) browserInfo = "Firefox";
-    else if (userAgent.indexOf("SamsungBrowser") > -1) browserInfo = "Samsung Browser";
-    else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browserInfo = "Opera";
-    else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) browserInfo = "Edge";
-    else if (userAgent.indexOf("Chrome") > -1) browserInfo = "Chrome";
-    else if (userAgent.indexOf("Safari") > -1) browserInfo = "Safari";
-
-    let osInfo = "Bilinmiyor";
-    if (userAgent.indexOf("Win") > -1) osInfo = "Windows";
-    else if (userAgent.indexOf("Mac") > -1) osInfo = "MacOS";
-    else if (userAgent.indexOf("Linux") > -1) osInfo = "Linux";
-    if (/android/i.test(userAgent)) osInfo = "Android";
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
-
-    const screenRes = `${window.screen.width}x${window.screen.height}`;
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
-    
-    // IP ve Konum bilgisini al (Public API üzerinden)
+    // IP ve Konum bilgisini hemen al ama sayfa kapanana kadar bekle
     fetch("https://ipapi.co/json/")
       .then(res => res.json())
       .then(data => {
-        const ip = data.ip || "Bulunamadı";
-        const city = data.city || "Bilinmiyor";
-        const country = data.country_name || "Bilinmiyor";
-        const isp = data.org || "Bilinmiyor";
-        const locationStr = `${city}, ${country}`;
-
-        sendAnalyticsWebhook(referrer, osInfo, browserInfo, deviceType, screenRes, timeZone, prefersDark, ip, locationStr, isp);
+        locationData.ip = data.ip || "Bulunamadı";
+        locationData.location = `${data.city || "Bilinmiyor"}, ${data.country_name || "Bilinmiyor"}`;
+        locationData.isp = data.org || "Bilinmiyor";
       })
-      .catch(() => {
-        // API çalışmazsa anonim olarak gönder
-        sendAnalyticsWebhook(referrer, osInfo, browserInfo, deviceType, screenRes, timeZone, prefersDark, "Bulunamadı", "Bilinmiyor", "Bilinmiyor");
-      });
+      .catch(() => {});
+
+    document.addEventListener("visibilitychange", function onVisibilityChange() {
+      if (document.visibilityState === 'hidden' && !sessionStorage.getItem("visited_log_sent")) {
+        sessionStorage.setItem("visited_log_sent", "true");
+        
+        const timeSpentSeconds = Math.floor((Date.now() - startTime) / 1000);
+        const timeSpentStr = timeSpentSeconds < 60 ? `${timeSpentSeconds} Saniye` : `${Math.floor(timeSpentSeconds/60)} Dakika ${timeSpentSeconds%60} Saniye`;
+
+        const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
+        const userAgent = navigator.userAgent;
+        let deviceType = "Masaüstü (PC)";
+        if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
+
+        let browserInfo = "Bilinmiyor";
+        if (userAgent.indexOf("Firefox") > -1) browserInfo = "Firefox";
+        else if (userAgent.indexOf("SamsungBrowser") > -1) browserInfo = "Samsung Browser";
+        else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browserInfo = "Opera";
+        else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) browserInfo = "Edge";
+        else if (userAgent.indexOf("Chrome") > -1) browserInfo = "Chrome";
+        else if (userAgent.indexOf("Safari") > -1) browserInfo = "Safari";
+
+        let osInfo = "Bilinmiyor";
+        if (userAgent.indexOf("Win") > -1) osInfo = "Windows";
+        else if (userAgent.indexOf("Mac") > -1) osInfo = "MacOS";
+        else if (userAgent.indexOf("Linux") > -1) osInfo = "Linux";
+        if (/android/i.test(userAgent)) osInfo = "Android";
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
+
+        const screenRes = `${window.screen.width}x${window.screen.height}`;
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
+        
+        const payload = {
+          embeds: [{
+            title: "👀 Yeni Bir Ziyaretçi Geldi (Ve Çıktı)!",
+            color: 3447003,
+            fields: [
+              { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
+              { name: "⏱️ Sitede Kalma Süresi", value: timeSpentStr, inline: false },
+              { name: "📍 Konum", value: locationData.location, inline: true },
+              { name: "🌐 IP Adresi", value: locationData.ip, inline: true },
+              { name: "🏢 Servis Sağlayıcı", value: locationData.isp, inline: true },
+              { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
+              { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
+              { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
+              { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
+              { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
+              { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
+            ],
+            footer: { text: "Bulut Gürgeli Analytics" },
+            timestamp: new Date().toISOString()
+          }]
+        };
+
+        fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).catch(e => console.log("Analytics error"));
+        
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      }
+    });
   }
 });
-
-function sendAnalyticsWebhook(referrer, osInfo, browserInfo, deviceType, screenRes, timeZone, prefersDark, ip, location, isp) {
-  const payload = {
-    embeds: [{
-      title: "👀 Yeni Bir Ziyaretçi Geldi!",
-      color: 3447003, // Mavi renk
-      fields: [
-        { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
-        { name: "📍 Konum", value: location, inline: true },
-        { name: "🌐 IP Adresi", value: ip, inline: true },
-        { name: "🏢 Servis Sağlayıcı (ISP)", value: isp, inline: true },
-        { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
-        { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
-        { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
-        { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
-        { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
-        { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
-      ],
-      footer: { text: "Bulut Gürgeli Analytics" },
-      timestamp: new Date().toISOString()
-    }]
-  };
-
-  fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  }).catch(e => console.log("Analytics error"));
-}
