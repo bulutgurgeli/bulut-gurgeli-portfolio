@@ -671,7 +671,7 @@ p {
   text-transform: uppercase;
 }
 
-.case-media iframe {
+.case-media > iframe {
   position: absolute;
   inset: 0;
   z-index: 1;
