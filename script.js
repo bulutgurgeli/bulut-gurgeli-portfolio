@@ -630,9 +630,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
       };
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source') || "";
-
       // Google Apps Script'e gönderilecek tüm ziyaretçi verileri
       const queryParams = new URLSearchParams({
         ip: safeString(locationData.ip),
@@ -652,8 +649,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lang: safeString(`${navigator.language} / ${timeZone}`),
         time: safeString(localTime),
         theme: safeString(prefersDark),
-        ref: safeString(referrer),
-        tag: safeString(trackingCode)
+        ref: safeString(referrer)
       });
 
       const relayUrl = `https://script.google.com/macros/s/AKfycbwYxAoXdfjHnL7QdelxD0X_I9JYp8qdPkdkMolqNF2V7bEHSzKw79I8SC2v533jMl_S/exec?${queryParams.toString()}`;
