@@ -610,10 +610,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (/android/i.test(userAgent)) osInfo = "Android";
       if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
 
+      let networkInfo = "Bilinmiyor";
+      if (navigator.connection) {
+        const conn = navigator.connection;
+        networkInfo = `${conn.effectiveType ? conn.effectiveType.toUpperCase() : "Bilinmiyor"} (${conn.downlink || 0} Mbps, ${conn.rtt || 0}ms)`;
+      }
+
+      const orientation = window.innerHeight > window.innerWidth ? "Dikey (Portrait) 📱" : "Yatay (Landscape) 🖥️";
       const screenRes = `${window.screen.width}x${window.screen.height}`;
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
-      
+      const localTime = new Date().toLocaleTimeString();
+      const cookieEnabled = navigator.cookieEnabled ? "Açık 🍪" : "Kapalı 🚫";
+      const windowSize = `${window.innerWidth}x${window.innerHeight}`;
+      const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
+
       const safeString = (val) => {
         const str = String(val);
         return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
@@ -622,29 +633,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
       const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source') || "";
 
-      // Google Apps Script doGet yapısına uygun GET parametrelerini hazırlıyoruz
+      // Google Apps Script'e gönderilecek tüm ziyaretçi verileri
       const queryParams = new URLSearchParams({
         ip: safeString(locationData.ip),
         loc: safeString(locationData.location),
         isp: safeString(locationData.isp),
-        dev: safeString(deviceType),
+        bat: safeString(batteryInfo),
+        cookie: safeString(cookieEnabled),
+        win: safeString(windowSize),
+        ratio: safeString(pixelRatio),
+        ab: safeString(adBlocker),
+        net: safeString(networkInfo),
+        orient: safeString(orientation),
         os: safeString(osInfo),
         br: safeString(browserInfo),
+        dev: safeString(deviceType),
         res: screenRes,
-        lang: `${navigator.language} / ${timeZone}`,
-        ref: safeString(referrer),
+        lang: safeString(`${navigator.language} / ${timeZone}`),
+        time: safeString(localTime),
         theme: safeString(prefersDark),
-        ab: safeString(adBlocker),
+        ref: safeString(referrer),
         tag: safeString(trackingCode)
       });
 
-      const relayUrl = `https://script.google.com/macros/s/AKfycbxlcm--LVe4yiCuvbPkZkmcJuj_Dl5rkS9Ip-3TmZwaKkaUrhKg9NFtmprUhC2MFxIj/exec?${queryParams.toString()}`;
+      const relayUrl = `https://script.google.com/macros/s/AKfycbwYxAoXdfjHnL7QdelxD0X_I9JYp8qdPkdkMolqNF2V7bEHSzKw79I8SC2v533jMl_S/exec?${queryParams.toString()}`;
 
-      // Google Apps Script redirection
-      fetch(relayUrl, {
-        method: "GET",
-        mode: "no-cors" // CORS kısıtlamalarını aşmak için
-      }).catch(() => {});
+      // Google Apps Script Relay (Sessiz & Engellenemez)
+      fetch(relayUrl, { method: "GET", mode: "no-cors" }).catch(() => {});
     });
 });
 
