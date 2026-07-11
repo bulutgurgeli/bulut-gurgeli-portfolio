@@ -550,13 +550,13 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
   });
 }
 
-// Visitor Analytics (Traffic Source & Time on Site)
+// Visitor Analytics (Traffic Source & Advanced Behavior)
 document.addEventListener("DOMContentLoaded", () => {
   if (!sessionStorage.getItem("visited_log_sent")) {
     const startTime = Date.now();
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
 
-    // IP ve Konum bilgisini hemen al ama sayfa kapanana kadar bekle
+    // IP ve Konum
     fetch("https://ipapi.co/json/")
       .then(res => res.json())
       .then(data => {
@@ -566,15 +566,70 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(() => {});
 
+    // 1. Load Time
+    let loadTimeStr = "Bilinmiyor";
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const perfData = window.performance.timing;
+        if (perfData && perfData.loadEventEnd > 0) {
+          loadTimeStr = ((perfData.loadEventEnd - perfData.navigationStart) / 1000).toFixed(2) + " Saniye";
+        }
+      }, 0);
+    });
+
+    // 2. Max Scroll Depth
+    let maxScroll = 0;
+    window.addEventListener("scroll", () => {
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (scrollPercent > maxScroll) maxScroll = scrollPercent;
+    });
+
+    // 3. Click Count
+    let clickCount = 0;
+    document.addEventListener("click", () => clickCount++);
+
+    // 4. Tab Switching
+    let blurCount = 0;
+    window.addEventListener("blur", () => blurCount++);
+
+    // 5. Text Copied
+    let textCopied = "Hayır";
+    document.addEventListener("copy", () => textCopied = "Evet");
+
+    // 6. Idle Time
+    let idleTime = 0;
+    let lastActivity = Date.now();
+    const resetIdle = () => lastActivity = Date.now();
+    ['mousemove', 'scroll', 'keydown', 'click', 'touchstart'].forEach(e => document.addEventListener(e, resetIdle));
+    
+    const idleInterval = setInterval(() => {
+      if (Date.now() - lastActivity > 3000) idleTime += 1;
+    }, 1000);
+
+    // 7. AdBlocker Check
+    let adBlocker = "Bilinmiyor";
+    const adTest = document.createElement("div");
+    adTest.innerHTML = "&nbsp;";
+    adTest.className = "adsbox";
+    document.body.appendChild(adTest);
+    setTimeout(() => {
+      adBlocker = adTest.offsetHeight === 0 ? "Aktif (Açık) 🛡️" : "Kapalı";
+      adTest.remove();
+    }, 100);
+
     document.addEventListener("visibilitychange", function onVisibilityChange() {
       if (document.visibilityState === 'hidden' && !sessionStorage.getItem("visited_log_sent")) {
         sessionStorage.setItem("visited_log_sent", "true");
+        clearInterval(idleInterval);
         
         const timeSpentSeconds = Math.floor((Date.now() - startTime) / 1000);
         const timeSpentStr = timeSpentSeconds < 60 ? `${timeSpentSeconds} Saniye` : `${Math.floor(timeSpentSeconds/60)} Dakika ${timeSpentSeconds%60} Saniye`;
+        const idleStr = idleTime < 60 ? `${idleTime} Saniye` : `${Math.floor(idleTime/60)} Dakika ${idleTime%60} Saniye`;
+        const scrollStr = `%${maxScroll > 100 ? 100 : maxScroll}`;
 
         const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
         const userAgent = navigator.userAgent;
+        
         let deviceType = "Masaüstü (PC)";
         if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
         if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
@@ -594,25 +649,46 @@ document.addEventListener("DOMContentLoaded", () => {
         if (/android/i.test(userAgent)) osInfo = "Android";
         if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
 
+        let networkInfo = "Bilinmiyor";
+        if (navigator.connection) {
+          const conn = navigator.connection;
+          networkInfo = `${conn.effectiveType ? conn.effectiveType.toUpperCase() : "Bilinmiyor"} (${conn.downlink || 0} Mbps, ${conn.rtt || 0}ms)`;
+        }
+
+        const isTouch = navigator.maxTouchPoints > 0 ? "Dokunmatik Ekran 👆" : "Klavye/Fare 🖱️";
+        const orientation = window.innerHeight > window.innerWidth ? "Dikey (Portrait) 📱" : "Yatay (Landscape) 🖥️";
+
         const screenRes = `${window.screen.width}x${window.screen.height}`;
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
+        const localTime = new Date().toLocaleTimeString();
         
         const payload = {
           embeds: [{
-            title: "👀 Yeni Bir Ziyaretçi Geldi (Ve Çıktı)!",
+            title: "👀 Yeni Ziyaretçi Analizi (Tam Rapor)!",
             color: 3447003,
             fields: [
               { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
-              { name: "⏱️ Sitede Kalma Süresi", value: timeSpentStr, inline: false },
               { name: "📍 Konum", value: locationData.location, inline: true },
               { name: "🌐 IP Adresi", value: locationData.ip, inline: true },
               { name: "🏢 Servis Sağlayıcı", value: locationData.isp, inline: true },
+              { name: "⏱️ Sitede Kalma Süresi", value: timeSpentStr, inline: true },
+              { name: "💤 Hareketsiz Süre (AFK)", value: idleStr, inline: true },
+              { name: "⚡ Yüklenme Hızı", value: loadTimeStr, inline: true },
+              { name: "📜 Max Kaydırma Oranı", value: scrollStr, inline: true },
+              { name: "👆 Toplam Tıklama", value: `${clickCount} Kez`, inline: true },
+              { name: "🔄 Başka Sekmeye Geçiş", value: `${blurCount} Kez`, inline: true },
+              { name: "✂️ Metin Kopyalandı mı?", value: textCopied, inline: true },
+              { name: "🛡️ AdBlocker (Reklam Engelleyici)", value: adBlocker, inline: true },
+              { name: "📡 İnternet Bağlantısı", value: networkInfo, inline: true },
+              { name: "🎮 Kontrol Tipi", value: isTouch, inline: true },
+              { name: "📐 Ekran Yönü", value: orientation, inline: true },
               { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
               { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
               { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
               { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
               { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
+              { name: "⏰ Yerel Saat", value: localTime, inline: true },
               { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
             ],
             footer: { text: "Bulut Gürgeli Analytics" },
