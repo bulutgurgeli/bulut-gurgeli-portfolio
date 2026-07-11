@@ -550,34 +550,56 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
   });
 }
 
-// Visitor Analytics (Customized Tracking)
+// Ziyaretçi Analizi ve Hata Ayıklama (Debug)
 document.addEventListener("DOMContentLoaded", () => {
+    // Ekranda çalışan şeffaf bir hata ayıklayıcı (Debug UI) oluşturuyoruz
+    const debugUI = document.createElement("div");
+    debugUI.style.position = "fixed";
+    debugUI.style.bottom = "10px";
+    debugUI.style.left = "10px";
+    debugUI.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    debugUI.style.color = "lime";
+    debugUI.style.padding = "10px";
+    debugUI.style.fontSize = "12px";
+    debugUI.style.zIndex = "999999";
+    debugUI.style.borderRadius = "8px";
+    debugUI.style.pointerEvents = "none";
+    debugUI.innerHTML = "<b>Sistem Başlatıldı...</b><br>";
+    document.body.appendChild(debugUI);
+
+    const logDebug = (msg) => {
+      debugUI.innerHTML += `> ${msg}<br>`;
+    };
+
+    logDebug("Değişkenler hazırlanıyor...");
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
     let batteryInfo = "Desteklenmiyor";
     
-    // IP Fetch (ipapi.co rate limit veya AdBlock yediği için daha güçlü API'lere geçildi)
+    logDebug("IP Adresi aranıyor (ipinfo)...");
     const ipPromise = fetch("https://ipinfo.io/json")
       .then(res => res.json())
       .then(data => {
         locationData.ip = data.ip || "Bulunamadı";
         locationData.location = `${data.city || "Bilinmiyor"}, ${data.country || "Bilinmiyor"}`;
         locationData.isp = data.org || "Bilinmiyor";
+        logDebug("IP Başarılı (ipinfo).");
       })
       .catch(() => {
-        // İkinci bir yedek API (Sadece IP için)
+        logDebug("ipinfo çöktü, ipify deneniyor...");
         return fetch("https://api.ipify.org?format=json")
           .then(res => res.json())
           .then(data => {
              locationData.ip = data.ip || "Bulunamadı";
-          }).catch(() => {});
+             logDebug("IP Başarılı (ipify).");
+          }).catch((e) => {
+             logDebug("İki IP servisi de engellendi!");
+          });
       });
 
-    // Battery Fetch
     const batteryPromise = navigator.getBattery ? navigator.getBattery().then(b => {
       batteryInfo = `%${Math.round(b.level * 100)} - ${b.charging ? 'Şarjda ⚡' : 'Pilde 🔋'}`;
     }).catch(() => {}) : Promise.resolve();
 
-    // AdBlocker Check
     let adBlocker = "Bilinmiyor";
     const adTest = document.createElement("div");
     adTest.innerHTML = "&nbsp;";
@@ -592,85 +614,38 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 100);
     });
 
+    logDebug("Veriler bekleniyor...");
     Promise.all([ipPromise, batteryPromise, adBlockerPromise]).then(() => {
-      const referrer = document.referrer || "Doğrudan Giriş (Direkt Link / WhatsApp vb.)";
+      logDebug("Veriler toplandı, payload hazırlanıyor...");
+      
+      const referrer = document.referrer || "Doğrudan Giriş";
       const userAgent = navigator.userAgent;
       
       let deviceType = "Masaüstü (PC)";
       if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
       if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
 
-      let browserInfo = "Bilinmiyor";
-      if (userAgent.indexOf("Firefox") > -1) browserInfo = "Firefox";
-      else if (userAgent.indexOf("SamsungBrowser") > -1) browserInfo = "Samsung Browser";
-      else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browserInfo = "Opera";
-      else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) browserInfo = "Edge";
-      else if (userAgent.indexOf("Chrome") > -1) browserInfo = "Chrome";
-      else if (userAgent.indexOf("Safari") > -1) browserInfo = "Safari";
-
-      let osInfo = "Bilinmiyor";
-      if (userAgent.indexOf("Win") > -1) osInfo = "Windows";
-      else if (userAgent.indexOf("Mac") > -1) osInfo = "MacOS";
-      else if (userAgent.indexOf("Linux") > -1) osInfo = "Linux";
-      if (/android/i.test(userAgent)) osInfo = "Android";
-      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
-
-      let networkInfo = "Bilinmiyor";
-      if (navigator.connection) {
-        const conn = navigator.connection;
-        networkInfo = `${conn.effectiveType ? conn.effectiveType.toUpperCase() : "Bilinmiyor"} (${conn.downlink || 0} Mbps, ${conn.rtt || 0}ms)`;
-      }
-
-      const orientation = window.innerHeight > window.innerWidth ? "Dikey (Portrait) 📱" : "Yatay (Landscape) 🖥️";
       const screenRes = `${window.screen.width}x${window.screen.height}`;
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
       const localTime = new Date().toLocaleTimeString();
       
-      const cookieEnabled = navigator.cookieEnabled ? "Açık 🍪" : "Kapalı 🚫";
-      const windowSize = `${window.innerWidth}x${window.innerHeight}`;
-      const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
-
-      const safeString = (val) => {
-        const str = String(val);
-        return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
-      };
-
-      // Özel URL Parametresi Tespiti (Örn: ?kisi=ahmet veya ?ref=instagram)
       const urlParams = new URLSearchParams(window.location.search);
       const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source');
 
+      const safeString = (val) => String(val) || "Bilinmiyor";
+
       const embedFields = [
-        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false }
-      ];
-
-      if (trackingCode) {
-        embedFields.push({ name: "🎯 Özel Takip Etiketi", value: safeString(trackingCode), inline: false });
-      }
-
-      embedFields.push(
+        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false },
         { name: "📍 Konum", value: safeString(locationData.location), inline: true },
         { name: "🌐 IP Adresi", value: safeString(locationData.ip), inline: true },
-        { name: "🏢 Servis Sağlayıcı", value: safeString(locationData.isp), inline: true },
-        { name: "🔋 Batarya Durumu", value: safeString(batteryInfo), inline: true },
-        { name: "🍪 Çerez (Cookie) İzni", value: safeString(cookieEnabled), inline: true },
-        { name: "🪟 Pencere Boyutu", value: safeString(windowSize), inline: true },
-        { name: "💎 Ekran Kalitesi (Ratio)", value: safeString(pixelRatio), inline: true },
+        { name: "💻 İşletim Sistemi / Cihaz", value: safeString(deviceType), inline: true },
         { name: "🛡️ AdBlocker", value: safeString(adBlocker), inline: true },
-        { name: "📡 İnternet Bağlantısı", value: safeString(networkInfo), inline: true },
-        { name: "📐 Ekran Yönü", value: safeString(orientation), inline: true },
-        { name: "💻 İşletim Sistemi", value: safeString(osInfo), inline: true },
-        { name: "🌐 Tarayıcı", value: safeString(browserInfo), inline: true },
-        { name: "📱 Cihaz Tipi", value: safeString(deviceType), inline: true },
-        { name: "🖥️ Ekran Çözünürlüğü", value: safeString(screenRes), inline: true },
-        { name: "🌍 Dil & Saat Dilimi", value: safeString(`${navigator.language} / ${timeZone}`), inline: true },
-        { name: "⏰ Yerel Saat", value: safeString(localTime), inline: true },
-        { name: "🎨 Tema Tercihi", value: safeString(prefersDark), inline: true }
-      );
+      ];
+
+      if (trackingCode) embedFields.push({ name: "🎯 Takip Etiketi", value: safeString(trackingCode), inline: false });
 
       const payload = {
         embeds: [{
-          title: "👀 Yeni Ziyaretçi Analizi (Özelleştirilmiş)",
+          title: "👀 Yeni Ziyaretçi Analizi (Debug Modu)",
           color: 3447003,
           fields: embedFields,
           footer: { text: "Bulut Gürgeli Analytics" },
@@ -679,46 +654,42 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-      
-      // iOS ve katı AdBlocker'ları aşmak için Fetch (no-cors) ve Gizli Form Submit taktiklerini birleştiriyoruz
-      const sendViaForm = () => {
-        try {
-          const iframeName = "analytics_frame_" + Date.now();
-          const iframe = document.createElement("iframe");
-          iframe.name = iframeName;
-          iframe.style.display = "none";
-          document.body.appendChild(iframe);
+      logDebug("Discord'a form fırlatılıyor...");
 
-          const form = document.createElement("form");
-          form.action = webhookUrl;
-          form.method = "POST";
-          form.target = iframeName;
-          form.enctype = "multipart/form-data";
-          form.style.display = "none";
+      try {
+        const iframeName = "analytics_frame_" + Date.now();
+        const iframe = document.createElement("iframe");
+        iframe.name = iframeName;
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
 
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = "payload_json";
-          input.value = JSON.stringify(payload);
-          
-          form.appendChild(input);
-          document.body.appendChild(form);
-          form.submit();
-          
-          setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
-        } catch (e) {}
-      };
+        const form = document.createElement("form");
+        form.action = webhookUrl;
+        form.method = "POST";
+        form.target = iframeName;
+        form.enctype = "multipart/form-data";
+        form.style.display = "none";
 
-      const formData = new FormData();
-      formData.append("payload_json", JSON.stringify(payload));
-
-      fetch(webhookUrl, {
-        method: "POST",
-        body: formData,
-        mode: "no-cors" // CORS kısıtlamalarını tamamen bypass eder
-      }).catch(() => {
-        // Eğer Fetch (ağ seviyesinde) engellenirse, form gönderimi (HTML navigasyon seviyesinde) ile zorla gönder
-        sendViaForm();
-      });
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "payload_json";
+        input.value = JSON.stringify(payload);
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+        
+        logDebug("Form gönderimi (submit) tetiklendi!");
+        setTimeout(() => { 
+          form.remove(); 
+          iframe.remove(); 
+          logDebug("İşlem tamam, izler silindi.");
+          setTimeout(() => debugUI.remove(), 4000);
+        }, 3000);
+      } catch (e) {
+        logDebug("Kritik Hata: " + e.message);
+      }
+    }).catch(e => {
+       logDebug("Promise.all çöktü: " + e.message);
     });
 });
