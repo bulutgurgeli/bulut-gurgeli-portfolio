@@ -552,9 +552,6 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
 
 // Visitor Analytics (Customized Tracking)
 document.addEventListener("DOMContentLoaded", () => {
-  if (!sessionStorage.getItem("visited_log_sent")) {
-    sessionStorage.setItem("visited_log_sent", "true");
-    
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
     let batteryInfo = "Desteklenmiyor";
     
@@ -669,7 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const payload = {
         embeds: [{
-          title: "👀 Yeni Ziyaretçi Analizi (Özelleştirilmiş)",
+          title: "👀 Yeni Ziyaretçi Analizi (Donanım Parmak İzi)",
           color: 3447003,
           fields: embedFields,
           footer: { text: "Bulut Gürgeli Analytics" },
@@ -683,5 +680,4 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(payload)
       }).catch(e => console.log("Analytics error"));
     });
-  }
 });
