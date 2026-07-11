@@ -627,30 +627,43 @@ document.addEventListener("DOMContentLoaded", () => {
       const windowSize = `${window.innerWidth}x${window.innerHeight}`;
       const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
 
+      // Özel URL Parametresi Tespiti (Örn: ?kisi=ahmet veya ?ref=instagram)
+      const urlParams = new URLSearchParams(window.location.search);
+      const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source');
+
+      const embedFields = [
+        { name: "🔗 Nereden Geldi?", value: referrer, inline: false }
+      ];
+
+      if (trackingCode) {
+        embedFields.push({ name: "🎯 Özel Takip Etiketi", value: trackingCode, inline: false });
+      }
+
+      embedFields.push(
+        { name: "📍 Konum", value: locationData.location, inline: true },
+        { name: "🌐 IP Adresi", value: locationData.ip, inline: true },
+        { name: "🏢 Servis Sağlayıcı", value: locationData.isp, inline: true },
+        { name: "🔋 Batarya Durumu", value: batteryInfo, inline: true },
+        { name: "🍪 Çerez (Cookie) İzni", value: cookieEnabled, inline: true },
+        { name: "🪟 Pencere Boyutu", value: windowSize, inline: true },
+        { name: "💎 Ekran Kalitesi (Ratio)", value: pixelRatio, inline: true },
+        { name: "🛡️ AdBlocker", value: adBlocker, inline: true },
+        { name: "📡 İnternet Bağlantısı", value: networkInfo, inline: true },
+        { name: "📐 Ekran Yönü", value: orientation, inline: true },
+        { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
+        { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
+        { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
+        { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
+        { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
+        { name: "⏰ Yerel Saat", value: localTime, inline: true },
+        { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
+      );
+
       const payload = {
         embeds: [{
           title: "👀 Yeni Ziyaretçi Analizi (Özelleştirilmiş)",
           color: 3447003,
-          fields: [
-            { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
-            { name: "📍 Konum", value: locationData.location, inline: true },
-            { name: "🌐 IP Adresi", value: locationData.ip, inline: true },
-            { name: "🏢 Servis Sağlayıcı", value: locationData.isp, inline: true },
-            { name: "🔋 Batarya Durumu", value: batteryInfo, inline: true },
-            { name: "🍪 Çerez (Cookie) İzni", value: cookieEnabled, inline: true },
-            { name: "🪟 Pencere Boyutu", value: windowSize, inline: true },
-            { name: "💎 Ekran Kalitesi (Ratio)", value: pixelRatio, inline: true },
-            { name: "🛡️ AdBlocker", value: adBlocker, inline: true },
-            { name: "📡 İnternet Bağlantısı", value: networkInfo, inline: true },
-            { name: "📐 Ekran Yönü", value: orientation, inline: true },
-            { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
-            { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
-            { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
-            { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
-            { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
-            { name: "⏰ Yerel Saat", value: localTime, inline: true },
-            { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
-          ],
+          fields: embedFields,
           footer: { text: "Bulut Gürgeli Analytics" },
           timestamp: new Date().toISOString()
         }]
