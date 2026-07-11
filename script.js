@@ -550,7 +550,7 @@ function sendToDiscord(name, email, message, ip, lang, btn, status) {
   });
 }
 
-// Ziyaretçi Analizi - Web Worker ile AdBlocker Bypass
+// Ziyaretçi Analizi - Google Apps Script Relay
 document.addEventListener("DOMContentLoaded", () => {
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
     let batteryInfo = "Desteklenmiyor";
@@ -669,45 +669,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-
-      // Web Worker: AdBlocker ana sayfadaki fetch'i engelliyor ama Worker kendi thread'inde çalışır, AdBlocker oraya erişemez!
-      const workerCode = `
-        self.onmessage = function(e) {
-          fetch(e.data.url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(e.data.payload)
-          })
-          .then(function(r) { self.postMessage({ ok: r.ok, status: r.status }); })
-          .catch(function(err) { self.postMessage({ ok: false, error: err.message }); });
-        };
-      `;
-      
-      try {
-        const blob = new Blob([workerCode], { type: "application/javascript" });
-        const workerUrl = URL.createObjectURL(blob);
-        const worker = new Worker(workerUrl);
-        
-        worker.onmessage = function(e) {
-          if (!e.data.ok) {
-            // Worker da engellenirse, son çare: navigator.sendBeacon
-            const beaconBlob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-            navigator.sendBeacon && navigator.sendBeacon(webhookUrl, beaconBlob);
-          }
-          worker.terminate();
-          URL.revokeObjectURL(workerUrl);
-        };
-        
-        worker.postMessage({ url: webhookUrl, payload: payload });
-      } catch (e) {
-        // Worker desteklenmiyorsa düz fetch dene
-        fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }).catch(() => {});
-      }
+      // Google Apps Script Relay - Hiçbir AdBlocker script.google.com'u engellemez!
+      fetch("https://script.google.com/macros/s/AKfycbwkWFViovvvtKVx4zgCC_g_CK7pJBEfG4WzN3MLXpE8Uc2x6doMpM97FsYSxwjtgagW/exec", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      }).catch(() => {});
     });
 });
 
