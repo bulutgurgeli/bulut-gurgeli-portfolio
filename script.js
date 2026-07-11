@@ -610,69 +610,40 @@ document.addEventListener("DOMContentLoaded", () => {
       if (/android/i.test(userAgent)) osInfo = "Android";
       if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
 
-      let networkInfo = "Bilinmiyor";
-      if (navigator.connection) {
-        const conn = navigator.connection;
-        networkInfo = `${conn.effectiveType ? conn.effectiveType.toUpperCase() : "Bilinmiyor"} (${conn.downlink || 0} Mbps, ${conn.rtt || 0}ms)`;
-      }
-
-      const orientation = window.innerHeight > window.innerWidth ? "Dikey (Portrait) 📱" : "Yatay (Landscape) 🖥️";
       const screenRes = `${window.screen.width}x${window.screen.height}`;
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
-      const localTime = new Date().toLocaleTimeString();
-      const cookieEnabled = navigator.cookieEnabled ? "Açık 🍪" : "Kapalı 🚫";
-      const windowSize = `${window.innerWidth}x${window.innerHeight}`;
-      const pixelRatio = window.devicePixelRatio ? `${window.devicePixelRatio}x` : "Standart";
-
+      
       const safeString = (val) => {
         const str = String(val);
         return (str && str !== "undefined" && str !== "null") ? str : "Bilinmiyor";
       };
 
       const urlParams = new URLSearchParams(window.location.search);
-      const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source');
+      const trackingCode = urlParams.get('kisi') || urlParams.get('ref') || urlParams.get('source') || "";
 
-      const embedFields = [
-        { name: "🔗 Nereden Geldi?", value: safeString(referrer), inline: false }
-      ];
-      if (trackingCode) {
-        embedFields.push({ name: "🎯 Özel Takip Etiketi", value: safeString(trackingCode), inline: false });
-      }
-      embedFields.push(
-        { name: "📍 Konum", value: safeString(locationData.location), inline: true },
-        { name: "🌐 IP Adresi", value: safeString(locationData.ip), inline: true },
-        { name: "🏢 Servis Sağlayıcı", value: safeString(locationData.isp), inline: true },
-        { name: "🔋 Batarya Durumu", value: safeString(batteryInfo), inline: true },
-        { name: "🍪 Çerez (Cookie) İzni", value: safeString(cookieEnabled), inline: true },
-        { name: "🪟 Pencere Boyutu", value: safeString(windowSize), inline: true },
-        { name: "💎 Ekran Kalitesi (Ratio)", value: safeString(pixelRatio), inline: true },
-        { name: "🛡️ AdBlocker", value: safeString(adBlocker), inline: true },
-        { name: "📡 İnternet Bağlantısı", value: safeString(networkInfo), inline: true },
-        { name: "📐 Ekran Yönü", value: safeString(orientation), inline: true },
-        { name: "💻 İşletim Sistemi", value: safeString(osInfo), inline: true },
-        { name: "🌐 Tarayıcı", value: safeString(browserInfo), inline: true },
-        { name: "📱 Cihaz Tipi", value: safeString(deviceType), inline: true },
-        { name: "🖥️ Ekran Çözünürlüğü", value: safeString(screenRes), inline: true },
-        { name: "🌍 Dil & Saat Dilimi", value: safeString(`${navigator.language} / ${timeZone}`), inline: true },
-        { name: "⏰ Yerel Saat", value: safeString(localTime), inline: true },
-        { name: "🎨 Tema Tercihi", value: safeString(prefersDark), inline: true }
-      );
+      // Google Apps Script doGet yapısına uygun GET parametrelerini hazırlıyoruz
+      const queryParams = new URLSearchParams({
+        ip: safeString(locationData.ip),
+        loc: safeString(locationData.location),
+        isp: safeString(locationData.isp),
+        dev: safeString(deviceType),
+        os: safeString(osInfo),
+        br: safeString(browserInfo),
+        res: screenRes,
+        lang: `${navigator.language} / ${timeZone}`,
+        ref: safeString(referrer),
+        theme: safeString(prefersDark),
+        ab: safeString(adBlocker),
+        tag: safeString(trackingCode)
+      });
 
-      const payload = {
-        embeds: [{
-          title: "👀 Yeni Ziyaretçi Analizi (Özelleştirilmiş)",
-          color: 3447003,
-          fields: embedFields,
-          footer: { text: "Bulut Gürgeli Analytics" },
-          timestamp: new Date().toISOString()
-        }]
-      };
+      const relayUrl = `https://script.google.com/macros/s/AKfycbxlcm--LVe4yiCuvbPkZkmcJuj_Dl5rkS9Ip-3TmZwaKkaUrhKg9NFtmprUhC2MFxIj/exec?${queryParams.toString()}`;
 
-      // Google Apps Script Relay - Hiçbir AdBlocker script.google.com'u engellemez!
-      fetch("https://script.google.com/macros/s/AKfycbwkWFViovvvtKVx4zgCC_g_CK7pJBEfG4WzN3MLXpE8Uc2x6doMpM97FsYSxwjtgagW/exec", {
-        method: "POST",
-        body: JSON.stringify(payload)
+      // Google Apps Script redirection
+      fetch(relayUrl, {
+        method: "GET",
+        mode: "no-cors" // CORS kısıtlamalarını aşmak için
       }).catch(() => {});
     });
 });
