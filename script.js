@@ -295,7 +295,7 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
 
 /* --- 2. Custom Cursor (non-touch only) --- */
-if (!('ontouchstart' in window)) {
+if (window.matchMedia("(pointer: fine)").matches) {
   document.body.classList.add('custom-cursor');
   const cursorDot = document.getElementById('cursor-dot');
   const cursorRing = document.getElementById('cursor-ring');

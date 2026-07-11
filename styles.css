@@ -60,7 +60,7 @@ body::before {
 }
 
 /* ── Custom Cursor ── */
-.custom-cursor, .custom-cursor a, .custom-cursor button, .custom-cursor iframe { cursor: none !important; }
+.custom-cursor, .custom-cursor a, .custom-cursor button { cursor: none !important; }
 
 #cursor-dot {
   position: fixed; top: 0; left: 0;
@@ -71,7 +71,7 @@ body::before {
   z-index: 10000;
   transform: translate(-50%, -50%);
   transition: width 0.2s, height 0.2s, background 0.2s;
-  mix-blend-mode: difference;
+  box-shadow: 0 0 10px var(--cyan);
 }
 
 #cursor-ring {
@@ -538,8 +538,8 @@ p {
 .about-copy {
   color: var(--paper);
   background: rgba(5, 5, 9, 0.72);
-  border: 0;
-  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
 }
 
 .about-copy p {
@@ -557,9 +557,10 @@ p {
 }
 
 .scope-card {
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(16, 12, 32, 0.6), rgba(5, 5, 9, 0.4));
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
 }
 
 .section-head {
@@ -604,7 +605,7 @@ p {
 .work-card:hover::after { opacity: 1; }
 
 .work-card.large {
-  grid-column: span 2;
+  grid-column: 1 / -1;
   min-height: 370px;
   color: var(--paper);
   background: linear-gradient(135deg, rgba(13, 10, 27, 0.98), rgba(67, 30, 148, 0.48));
@@ -622,8 +623,8 @@ p {
 
 .work-card.warm {
   color: var(--paper);
-  background: linear-gradient(135deg, rgba(128, 64, 255, 0.9), rgba(255, 122, 223, 0.58));
-  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, rgba(30, 15, 45, 0.9), rgba(60, 20, 60, 0.6));
+  border-color: rgba(255, 122, 223, 0.2);
 }
 
 .work-card.warm p,
@@ -736,6 +737,7 @@ p {
 .poster-preview {
   display: grid;
   place-items: center;
+  aspect-ratio: 16 / 9;
 }
 
 .poster-preview::before {
@@ -783,16 +785,14 @@ p {
 
 .film-poster {
   background:
-    radial-gradient(circle at 20% 18%, rgba(117, 231, 255, 0.2), transparent 15rem),
-    linear-gradient(135deg, rgba(8, 7, 16, 0.96), rgba(42, 58, 92, 0.44)),
-    #080710;
+    linear-gradient(135deg, rgba(8, 7, 16, 0.8), rgba(42, 58, 92, 0.6)),
+    url("https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80") center / cover;
 }
 
 .kulyas-poster {
   background:
-    radial-gradient(circle at 72% 18%, rgba(201, 167, 255, 0.26), transparent 16rem),
-    linear-gradient(135deg, rgba(8, 7, 16, 0.96), rgba(82, 28, 78, 0.48)),
-    #080710;
+    linear-gradient(135deg, rgba(8, 7, 16, 0.85), rgba(82, 28, 78, 0.6)),
+    url("https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?auto=format&fit=crop&w=800&q=80") center / cover;
 }
 
 .media-placeholder {
