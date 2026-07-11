@@ -678,20 +678,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      // Fetch yerine eski tip XHR (XMLHttpRequest) kullanıyoruz (Bazı reklam engelleyiciler sadece fetch'i yakalar)
+      // Fetch yerine eski tip XHR (XMLHttpRequest) ve Proxy'yi BİRLİKTE kullanıyoruz (iOS Safari 'Load failed' Bypass)
       const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
+      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(webhookUrl);
+      
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", webhookUrl, true);
+      xhr.open("POST", proxyUrl, true);
       xhr.setRequestHeader("Content-Type", "application/json");
       
       xhr.onload = function() {
         if (xhr.status >= 400) {
-          alert("⚠️ DİKKAT: Discord API Logu Reddetti! Kod: " + xhr.status + " | Sebep: " + xhr.responseText);
+          alert("⚠️ DİKKAT: Discord API (veya Proxy) Logu Reddetti! Kod: " + xhr.status + " | Sebep: " + xhr.responseText);
         }
       };
       
       xhr.onerror = function() {
-        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı (veya AdBlocker) XHR İsteğini de Engelledi! (Load failed). Bu telefon geçit vermiyor!");
+        // Son Çare Olarak Proxy olmadan direk atmayı dene
+        const fallbackXhr = new XMLHttpRequest();
+        fallbackXhr.open("POST", webhookUrl, true);
+        fallbackXhr.setRequestHeader("Content-Type", "application/json");
+        fallbackXhr.onerror = function() {
+           alert("⚠️ DİKKAT: Telefonunun Tarayıcısı HER ŞEYİ Engelledi! (Load failed). Proxy ve XHR bile işe yaramadı.");
+        };
+        fallbackXhr.send(JSON.stringify(payload));
       };
       
       xhr.send(JSON.stringify(payload));
