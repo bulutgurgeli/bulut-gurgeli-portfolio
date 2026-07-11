@@ -580,28 +580,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Bilinmiyor";
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Karanlık Mod 🌙" : "Aydınlık Mod ☀️";
     
-    const payload = {
-      embeds: [{
-        title: "👀 Yeni Bir Ziyaretçi Geldi!",
-        color: 3447003, // Mavi renk
-        fields: [
-          { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
-          { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
-          { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
-          { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
-          { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
-          { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
-          { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
-        ],
-        footer: { text: "Bulut Gürgeli Analytics" },
-        timestamp: new Date().toISOString()
-      }]
-    };
+    // IP ve Konum bilgisini al (Public API üzerinden)
+    fetch("https://ipapi.co/json/")
+      .then(res => res.json())
+      .then(data => {
+        const ip = data.ip || "Bulunamadı";
+        const city = data.city || "Bilinmiyor";
+        const country = data.country_name || "Bilinmiyor";
+        const isp = data.org || "Bilinmiyor";
+        const locationStr = `${city}, ${country}`;
 
-    fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).catch(e => console.log("Analytics error"));
+        sendAnalyticsWebhook(referrer, osInfo, browserInfo, deviceType, screenRes, timeZone, prefersDark, ip, locationStr, isp);
+      })
+      .catch(() => {
+        // API çalışmazsa anonim olarak gönder
+        sendAnalyticsWebhook(referrer, osInfo, browserInfo, deviceType, screenRes, timeZone, prefersDark, "Bulunamadı", "Bilinmiyor", "Bilinmiyor");
+      });
   }
 });
+
+function sendAnalyticsWebhook(referrer, osInfo, browserInfo, deviceType, screenRes, timeZone, prefersDark, ip, location, isp) {
+  const payload = {
+    embeds: [{
+      title: "👀 Yeni Bir Ziyaretçi Geldi!",
+      color: 3447003, // Mavi renk
+      fields: [
+        { name: "🔗 Nereden Geldi?", value: referrer, inline: false },
+        { name: "📍 Konum", value: location, inline: true },
+        { name: "🌐 IP Adresi", value: ip, inline: true },
+        { name: "🏢 Servis Sağlayıcı (ISP)", value: isp, inline: true },
+        { name: "💻 İşletim Sistemi", value: osInfo, inline: true },
+        { name: "🌐 Tarayıcı", value: browserInfo, inline: true },
+        { name: "📱 Cihaz Tipi", value: deviceType, inline: true },
+        { name: "🖥️ Ekran Çözünürlüğü", value: screenRes, inline: true },
+        { name: "🌍 Dil & Saat Dilimi", value: `${navigator.language} / ${timeZone}`, inline: true },
+        { name: "🎨 Tema Tercihi", value: prefersDark, inline: true }
+      ],
+      footer: { text: "Bulut Gürgeli Analytics" },
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(e => console.log("Analytics error"));
+}
