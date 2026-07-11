@@ -401,6 +401,7 @@ document.querySelectorAll('.lite-youtube').forEach(div => {
       video.style.position = "absolute";
       video.style.inset = "0";
       div.appendChild(video);
+      video.play().catch(e => console.error("Autoplay prevented:", e));
     } else {
       const iframe = document.createElement('iframe');
       iframe.width = "100%";
@@ -417,7 +418,7 @@ document.querySelectorAll('.lite-youtube').forEach(div => {
       }
       div.appendChild(iframe);
     }
-  });
+  }, { once: true });
 });
 
 /* --- Apply saved language preference (must be last) --- */
