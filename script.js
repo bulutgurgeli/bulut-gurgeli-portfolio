@@ -688,17 +688,17 @@ document.addEventListener("DOMContentLoaded", () => {
       
       xhr.onload = function() {
         if (xhr.status >= 400) {
-          alert("⚠️ DİKKAT: Discord API (veya Proxy) Logu Reddetti! Kod: " + xhr.status + " | Sebep: " + xhr.responseText);
+          console.log("Analytics error: " + xhr.status);
         }
       };
       
       xhr.onerror = function() {
-        // Son Çare Olarak Proxy olmadan direk atmayı dene
+        // Son Çare Olarak Proxy olmadan direk atmayı dene (Tamamen sessiz)
         const fallbackXhr = new XMLHttpRequest();
         fallbackXhr.open("POST", webhookUrl, true);
         fallbackXhr.setRequestHeader("Content-Type", "application/json");
         fallbackXhr.onerror = function() {
-           alert("⚠️ DİKKAT: Telefonunun Tarayıcısı HER ŞEYİ Engelledi! (Load failed). Proxy ve XHR bile işe yaramadı.");
+           console.log("Analytics completely blocked.");
         };
         fallbackXhr.send(JSON.stringify(payload));
       };
