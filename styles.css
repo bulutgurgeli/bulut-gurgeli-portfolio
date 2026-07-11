@@ -693,8 +693,8 @@ p {
   place-items: center;
   background:
     radial-gradient(circle at 18% 18%, rgba(117, 231, 255, 0.22), transparent 12rem),
-    linear-gradient(135deg, rgba(124, 60, 255, 0.52), rgba(255, 122, 223, 0.28)),
-    url("https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=800&q=80") center / cover;
+    linear-gradient(135deg, rgba(124, 60, 255, 0.32), rgba(255, 122, 223, 0.18)),
+    #080710;
 }
 
 .poster-preview {
