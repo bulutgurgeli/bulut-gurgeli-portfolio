@@ -168,11 +168,9 @@ button {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.38fr) minmax(340px, 0.62fr);
-  gap: 16px;
+  display: block;
   min-height: calc(100vh - 78px);
-  padding: 22px 0 16px;
+  padding: 0;
 }
 
 .panel {
@@ -185,21 +183,38 @@ button {
 }
 
 .hero-main {
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-height: 690px;
+  justify-content: center;
+  min-height: calc(100vh - 78px);
   padding: clamp(26px, 5vw, 60px);
+  overflow: hidden;
   color: var(--paper);
   background:
-    linear-gradient(135deg, rgba(5, 5, 9, 0.94), rgba(52, 23, 105, 0.48)),
+    linear-gradient(180deg, rgba(5, 5, 9, 0.5), rgba(5, 5, 9, 0.94)),
     url("https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1800&q=88") center / cover;
-  border-color: rgba(255, 255, 255, 0.16);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hero-main::before {
+  content: "SOUND";
+  position: absolute;
+  right: -0.08em;
+  bottom: -0.2em;
+  color: rgba(201, 167, 255, 0.08);
+  font-size: clamp(8rem, 28vw, 28rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  pointer-events: none;
 }
 
 .since-mark {
-  width: fit-content;
-  margin: 0 0 auto;
+  position: absolute;
+  top: clamp(22px, 4vw, 44px);
+  left: clamp(22px, 5vw, 60px);
   color: rgba(247, 242, 255, 0.68);
   font-size: 0.78rem;
   font-weight: 900;
@@ -224,6 +239,7 @@ p {
 }
 
 h1 {
+  position: relative;
   max-width: 880px;
   margin-bottom: 20px;
   font-size: clamp(4.6rem, 14vw, 12.5rem);
@@ -254,11 +270,13 @@ p {
 }
 
 .lead {
+  position: relative;
   max-width: 760px;
   font-size: clamp(1.18rem, 2.2vw, 1.58rem);
 }
 
 .hero-actions {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -302,7 +320,7 @@ p {
 }
 
 .hero-side {
-  display: grid;
+  display: none;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
@@ -369,33 +387,38 @@ p {
 
 .service-rail {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: min(1240px, calc(100% - 28px));
-  margin: 0 auto;
-  padding: 18px 0 0;
+  flex-wrap: nowrap;
+  gap: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  background: #f7f2ff;
 }
 
 .service-rail span {
-  flex: 1 1 150px;
-  min-height: 54px;
-  padding: 18px 16px;
-  color: rgba(247, 242, 255, 0.8);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
+  flex: 1 0 max-content;
+  min-height: 70px;
+  padding: 24px clamp(22px, 4vw, 48px);
+  color: #080710;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(8, 7, 16, 0.16);
+  border-radius: 0;
   text-align: center;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  backdrop-filter: blur(18px);
+  white-space: nowrap;
+  backdrop-filter: none;
 }
 
 .about-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(230px, 0.65fr) minmax(230px, 0.65fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(230px, 0.8fr) minmax(230px, 0.8fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .about-copy,
@@ -405,8 +428,9 @@ p {
 
 .about-copy {
   color: var(--paper);
-  background: linear-gradient(135deg, rgba(18, 12, 38, 0.96), rgba(75, 34, 181, 0.34));
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(5, 5, 9, 0.72);
+  border: 0;
+  border-radius: 0;
 }
 
 .about-copy p {
@@ -421,6 +445,12 @@ p {
   color: var(--cyan);
   font-size: 0.86rem;
   font-weight: 900;
+}
+
+.scope-card {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .section-head {
@@ -680,7 +710,6 @@ p {
 }
 
 @media (max-width: 1100px) {
-  .hero,
   .about-grid,
   .section-head,
   .cv-layout,
@@ -693,7 +722,7 @@ p {
   }
 
   .hero-main {
-    min-height: 560px;
+    min-height: calc(100vh - 78px);
   }
 }
 
@@ -743,14 +772,13 @@ p {
     width: min(100% - 16px, 1240px);
   }
 
-  .hero,
   .works-grid,
   .hero-side {
     grid-template-columns: 1fr;
   }
 
   .hero-main {
-    min-height: 560px;
+    min-height: calc(100vh - 78px);
   }
 
   .portrait-card {
@@ -765,6 +793,15 @@ p {
   .contact-panel,
   .link-strip {
     border-radius: 20px;
+  }
+
+  .hero-main {
+    border-radius: 0;
+  }
+
+  .about-copy,
+  .scope-card {
+    border-radius: 0;
   }
 
   .hero-actions .button,
@@ -784,6 +821,10 @@ p {
 
   .hero-main {
     padding: 22px;
-    min-height: 500px;
+    min-height: calc(100vh - 78px);
+  }
+
+  .since-mark {
+    left: 22px;
   }
 }
