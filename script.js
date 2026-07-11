@@ -370,6 +370,7 @@ window.addEventListener('scroll', () => {
 document.querySelectorAll('.lite-youtube').forEach(div => {
   const vid = div.dataset.vid;
   const plist = div.dataset.plist;
+  const vimeoSrc = div.dataset.vimeoSrc;
   const thumb = div.dataset.thumb;
   
   if (thumb) {
@@ -386,23 +387,36 @@ document.querySelectorAll('.lite-youtube').forEach(div => {
   div.appendChild(playBtn);
 
   div.addEventListener('click', () => {
-    const iframe = document.createElement('iframe');
-    iframe.width = "100%";
-    iframe.height = "100%";
-    iframe.title = div.getAttribute('aria-label') || "YouTube video";
-    iframe.frameBorder = "0";
-    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-    iframe.allowFullscreen = true;
-    
-    if (vid) {
-      iframe.src = `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`;
-    } else if (plist) {
-      iframe.src = `https://www.youtube.com/embed/videoseries?list=${plist}&autoplay=1&rel=0`;
-    }
-    
     div.innerHTML = '';
     div.style.zIndex = '3';
-    div.appendChild(iframe);
+    
+    if (vimeoSrc) {
+      const video = document.createElement('video');
+      video.src = vimeoSrc;
+      video.controls = true;
+      video.autoplay = true;
+      video.style.width = "100%";
+      video.style.height = "100%";
+      video.style.objectFit = "cover";
+      video.style.position = "absolute";
+      video.style.inset = "0";
+      div.appendChild(video);
+    } else {
+      const iframe = document.createElement('iframe');
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.title = div.getAttribute('aria-label') || "YouTube video";
+      iframe.frameBorder = "0";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      
+      if (vid) {
+        iframe.src = `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`;
+      } else if (plist) {
+        iframe.src = `https://www.youtube.com/embed/videoseries?list=${plist}&autoplay=1&rel=0`;
+      }
+      div.appendChild(iframe);
+    }
   });
 });
 
