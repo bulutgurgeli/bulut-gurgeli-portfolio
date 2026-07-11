@@ -682,6 +682,14 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      }).catch(e => console.log("Analytics error"));
+      }).then(res => {
+        if (!res.ok) {
+          res.text().then(t => alert("⚠️ DİKKAT: Discord API Logu Reddetti! (Spam Limiti Olabilir): " + t));
+        } else {
+          // alert("✅ Log Başarıyla Gönderildi!"); // Sadece test amaçlı, normalde kapalı
+        }
+      }).catch(e => {
+        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı Webhook'u (Log Gönderimini) Engelliyor! Sebep: " + e.message);
+      });
     });
 });
