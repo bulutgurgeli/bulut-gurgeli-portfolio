@@ -128,7 +128,7 @@
 
         <div class="hero-visual">
           <div class="portrait-card glass-panel">
-            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80" alt="Sound Engineer Mixing Console" />
+            <img src="assets/hero-img.jpg" alt="Bulut Gürgeli - Sound Engineer" onerror="this.src='https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80'" />
             <div class="floating-badge top-right">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
               Live Audio
@@ -202,6 +202,10 @@
             </div>
           </article>
         </div>
+
+        <article class="panel about-photo">
+          <img src="assets/about-img.jpg" alt="Bulut Gürgeli Mixing" onerror="this.style.display='none'" />
+        </article>
       </section>
 
       <section id="works" class="section">
@@ -509,11 +513,12 @@
       </section>
 
       <section id="contact" class="contact-panel" data-reveal>
-        <div>
+        <img src="assets/contact-img.jpg" class="contact-bg" alt="" onerror="this.style.display='none'" />
+        <div style="position: relative; z-index: 1;">
           <p class="kicker" data-i18n="contactKicker">İletişim</p>
           <h2 data-i18n="contactTitle">Yeni proje ve set işleri için ulaşın.</h2>
         </div>
-        <div class="contact-links">
+        <div class="contact-links" style="position: relative; z-index: 1;">
           <a href="mailto:bulutgurgeli@gmail.com"><span data-i18n="emailLabel">E-posta</span>bulutgurgeli@gmail.com</a>
           <a href="tel:+905350760020"><span data-i18n="phoneLabel">Telefon</span>+90 535 076 0020</a>
           <a href="assets/bulut-gurgeli-cv.pdf" target="_blank" rel="noreferrer"><span>CV</span>assets/bulut-gurgeli-cv.pdf</a>
