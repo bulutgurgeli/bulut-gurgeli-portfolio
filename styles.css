@@ -428,7 +428,7 @@ p {
 
 @keyframes heroClipReveal {
   from { clip-path: inset(0 0 100% 0); opacity: 0; }
-  to { clip-path: inset(0 0 0% 0); opacity: 1; }
+  to { clip-path: inset(-50% -50% -50% -50%); opacity: 1; }
 }
 
 @keyframes fadeInUp {
