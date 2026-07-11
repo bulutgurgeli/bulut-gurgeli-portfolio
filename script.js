@@ -401,6 +401,7 @@ document.querySelectorAll('.lite-youtube').forEach(div => {
     }
     
     div.innerHTML = '';
+    div.style.zIndex = '3';
     div.appendChild(iframe);
   });
 });
