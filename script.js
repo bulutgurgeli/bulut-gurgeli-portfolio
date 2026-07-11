@@ -678,31 +678,47 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
       };
 
-      // Fetch yerine eski tip XHR (XMLHttpRequest) ve Proxy'yi BİRLİKTE kullanıyoruz (iOS Safari 'Load failed' Bypass)
       const webhookUrl = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(webhookUrl);
       
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", proxyUrl, true);
-      xhr.setRequestHeader("Content-Type", "application/json");
-      
-      xhr.onload = function() {
-        if (xhr.status >= 400) {
-          console.log("Analytics error: " + xhr.status);
-        }
+      // iOS ve katı AdBlocker'ları aşmak için Fetch (no-cors) ve Gizli Form Submit taktiklerini birleştiriyoruz
+      const sendViaForm = () => {
+        try {
+          const iframeName = "analytics_frame_" + Date.now();
+          const iframe = document.createElement("iframe");
+          iframe.name = iframeName;
+          iframe.style.display = "none";
+          document.body.appendChild(iframe);
+
+          const form = document.createElement("form");
+          form.action = webhookUrl;
+          form.method = "POST";
+          form.target = iframeName;
+          form.enctype = "multipart/form-data";
+          form.style.display = "none";
+
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = "payload_json";
+          input.value = JSON.stringify(payload);
+          
+          form.appendChild(input);
+          document.body.appendChild(form);
+          form.submit();
+          
+          setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
+        } catch (e) {}
       };
-      
-      xhr.onerror = function() {
-        // Son Çare Olarak Proxy olmadan direk atmayı dene (Tamamen sessiz)
-        const fallbackXhr = new XMLHttpRequest();
-        fallbackXhr.open("POST", webhookUrl, true);
-        fallbackXhr.setRequestHeader("Content-Type", "application/json");
-        fallbackXhr.onerror = function() {
-           console.log("Analytics completely blocked.");
-        };
-        fallbackXhr.send(JSON.stringify(payload));
-      };
-      
-      xhr.send(JSON.stringify(payload));
+
+      const formData = new FormData();
+      formData.append("payload_json", JSON.stringify(payload));
+
+      fetch(webhookUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors" // CORS kısıtlamalarını tamamen bypass eder
+      }).catch(() => {
+        // Eğer Fetch (ağ seviyesinde) engellenirse, form gönderimi (HTML navigasyon seviyesinde) ile zorla gönder
+        sendViaForm();
+      });
     });
 });
