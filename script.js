@@ -370,8 +370,11 @@ window.addEventListener('scroll', () => {
 document.querySelectorAll('.lite-youtube').forEach(div => {
   const vid = div.dataset.vid;
   const plist = div.dataset.plist;
+  const thumb = div.dataset.thumb;
   
-  if (vid) {
+  if (thumb) {
+    div.style.backgroundImage = `url(${thumb})`;
+  } else if (vid) {
     div.style.backgroundImage = `url(https://i.ytimg.com/vi/${vid}/hqdefault.jpg)`;
   } else if (plist) {
     div.style.background = 'linear-gradient(135deg, rgba(16, 12, 32, 0.9), rgba(67, 30, 148, 0.5))';
