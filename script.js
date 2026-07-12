@@ -555,23 +555,34 @@ document.addEventListener("DOMContentLoaded", () => {
     let locationData = { ip: "Bulunamadı", location: "Bilinmiyor", isp: "Bilinmiyor" };
     let batteryInfo = "Desteklenmiyor";
     
-    const ipPromise = fetch("https://ipinfo.io/json")
-      .then(res => res.json())
-      .then(data => {
-        locationData.ip = data.ip || "Bulunamadı";
-        locationData.location = `${data.city || "Bilinmiyor"}, ${data.country || "Bilinmiyor"}`;
-        locationData.isp = data.org || "Bilinmiyor";
-      })
-      .catch(() => {
-        return fetch("https://api.ipify.org?format=json")
-          .then(res => res.json())
-          .then(data => { locationData.ip = data.ip || "Bulunamadı"; })
-          .catch(() => {});
-      });
+    const safePromise = (promise, timeoutMs = 1500) => {
+      return Promise.race([
+        promise,
+        new Promise(resolve => setTimeout(() => resolve(), timeoutMs))
+      ]).catch(() => {});
+    };
 
-    const batteryPromise = navigator.getBattery ? navigator.getBattery().then(b => {
-      batteryInfo = `%${Math.round(b.level * 100)} - ${b.charging ? 'Şarjda ⚡' : 'Pilde 🔋'}`;
-    }).catch(() => {}) : Promise.resolve();
+    const ipPromise = safePromise(
+      fetch("https://ipinfo.io/json")
+        .then(res => res.json())
+        .then(data => {
+          locationData.ip = data.ip || "Bulunamadı";
+          locationData.location = `${data.city || "Bilinmiyor"}, ${data.country || "Bilinmiyor"}`;
+          locationData.isp = data.org || "Bilinmiyor";
+        })
+        .catch(() => {
+          return fetch("https://api.ipify.org?format=json")
+            .then(res => res.json())
+            .then(data => { locationData.ip = data.ip || "Bulunamadı"; })
+            .catch(() => {});
+        })
+    );
+
+    const batteryPromise = safePromise(
+      navigator.getBattery ? navigator.getBattery().then(b => {
+        batteryInfo = `%${Math.round(b.level * 100)} - ${b.charging ? 'Şarjda ⚡' : 'Pilde 🔋'}`;
+      }).catch(() => {}) : Promise.resolve()
+    );
 
     let adBlocker = "Bilinmiyor";
     const adTest = document.createElement("div");
@@ -645,8 +656,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (/iPad/.test(userAgent)) deviceType = "Tablet (iPad)";
         else if (/iPhone/.test(userAgent)) deviceType = "Mobil (iPhone)";
       }
-
-      let browserInfo = "Bilinmiyor";
 
       let networkInfo = "Bilinmiyor";
       if (navigator.connection) {
