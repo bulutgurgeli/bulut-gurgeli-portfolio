@@ -592,23 +592,61 @@ document.addEventListener("DOMContentLoaded", () => {
       const userAgent = navigator.userAgent;
       
       let deviceType = "Masaüstü (PC)";
-      if (/android/i.test(userAgent)) deviceType = "Mobil (Android)";
-      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) deviceType = "Mobil (iOS)";
+      let osInfo = "Bilinmiyor";
 
       let browserInfo = "Bilinmiyor";
-      if (userAgent.indexOf("Firefox") > -1) browserInfo = "Firefox";
-      else if (userAgent.indexOf("SamsungBrowser") > -1) browserInfo = "Samsung Browser";
-      else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) browserInfo = "Opera";
-      else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) browserInfo = "Edge";
-      else if (userAgent.indexOf("Chrome") > -1) browserInfo = "Chrome";
-      else if (userAgent.indexOf("Safari") > -1) browserInfo = "Safari";
-
-      let osInfo = "Bilinmiyor";
+      
+      if (userAgent.indexOf("Firefox") > -1) {
+        const match = userAgent.match(/Firefox\/([\d.]+)/);
+        browserInfo = match ? `Firefox ${match[1]}` : "Firefox";
+      }
+      else if (userAgent.indexOf("SamsungBrowser") > -1) {
+        const match = userAgent.match(/SamsungBrowser\/([\d.]+)/);
+        browserInfo = match ? `Samsung Browser ${match[1]}` : "Samsung Browser";
+      }
+      else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) {
+        const match = userAgent.match(/(?:Opera|OPR)\/([\d.]+)/);
+        browserInfo = match ? `Opera ${match[1]}` : "Opera";
+      }
+      else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Edg") > -1) {
+        const match = userAgent.match(/(?:Edge|Edg)\/([\d.]+)/);
+        browserInfo = match ? `Edge ${match[1]}` : "Edge";
+      }
+      else if (userAgent.indexOf("Chrome") > -1) {
+        const match = userAgent.match(/Chrome\/([\d.]+)/);
+        browserInfo = match ? `Chrome ${match[1]}` : "Chrome";
+      }
+      else if (userAgent.indexOf("Safari") > -1) {
+        const match = userAgent.match(/Version\/([\d.]+)/);
+        browserInfo = match ? `Safari ${match[1]}` : "Safari";
+      }
       if (userAgent.indexOf("Win") > -1) osInfo = "Windows";
       else if (userAgent.indexOf("Mac") > -1) osInfo = "MacOS";
       else if (userAgent.indexOf("Linux") > -1) osInfo = "Linux";
-      if (/android/i.test(userAgent)) osInfo = "Android";
-      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) osInfo = "iOS";
+
+      if (/android/i.test(userAgent)) {
+        deviceType = "Mobil (Android)";
+        osInfo = "Android";
+        const androidMatch = userAgent.match(/Android\s([^\s;]+)/i);
+        if (androidMatch && androidMatch[1]) {
+          osInfo = `Android ${androidMatch[1]}`;
+        }
+      }
+      
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        deviceType = "Mobil (iOS)";
+        osInfo = "iOS";
+        const iosMatch = userAgent.match(/OS\s([\d_]+)/i);
+        if (iosMatch && iosMatch[1]) {
+          osInfo = `iOS ${iosMatch[1].replace(/_/g, '.')}`;
+        }
+        
+        // Cihaz tipini detaylandır
+        if (/iPad/.test(userAgent)) deviceType = "Tablet (iPad)";
+        else if (/iPhone/.test(userAgent)) deviceType = "Mobil (iPhone)";
+      }
+
+      let browserInfo = "Bilinmiyor";
 
       let networkInfo = "Bilinmiyor";
       if (navigator.connection) {
