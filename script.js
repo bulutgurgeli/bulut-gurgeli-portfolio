@@ -508,27 +508,10 @@ if (contactForm) {
 }
 
 function sendToDiscord(name, email, message, ip, lang, btn, status) {
-  const webhookURL = "https://discord.com/api/webhooks/1525624927036637194/9LSurnXS_zgYTO8AkMvDm7nLExTJlSEQnImxyVjoxwtd8YPVXoiBk09BOtRBSnYxUP-q";
-  
-  const payload = {
-    embeds: [{
-      title: "📩 Yeni İletişim Formu Mesajı",
-      color: 10617599, // Morumsu bir renk (#a282ff)
-      fields: [
-        { name: "👤 İsim", value: name, inline: true },
-        { name: "📧 E-posta", value: email, inline: true },
-        { name: "🌐 IP Adresi", value: ip, inline: true },
-        { name: "💬 Mesaj", value: message }
-      ],
-      footer: { text: "Bulut Gürgeli Portfolio" },
-      timestamp: new Date().toISOString()
-    }]
-  };
-
-  fetch(webhookURL, {
+  fetch("/api/contact", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ name, email, message, ip, lang })
   })
   .then(response => {
     if (response.ok) {
@@ -705,4 +688,3 @@ document.addEventListener("DOMContentLoaded", () => {
       fetch(relayUrl, { method: "GET", mode: "no-cors" }).catch(() => {});
     });
 });
-
